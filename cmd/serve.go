@@ -4,8 +4,13 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"os"
 
+	"github.com/0xpelamar/kingscomp/internal/Telegram"
+	"github.com/0xpelamar/kingscomp/internal/repository"
+	"github.com/0xpelamar/kingscomp/internal/repository/redis"
+	"github.com/0xpelamar/kingscomp/internal/service"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +23,24 @@ var serveCmd = &cobra.Command{
 }
 
 func serve(cmd *cobra.Command, args []string) {
-	fmt.Println("serve called")
+	// setup repositories
+	redisClient, err := redis.NewRedisClient(os.Getenv("REDIS_URL"))
+	if err != nil {
+		logrus.WithError(err).Fatalln("could not connect to redis")
+	}
+	logrus.Infoln("Connected to redis successfully.")
+	accountRepository := repository.NewAccountRedisRepository(redisClient)
+	accountService := service.NewAccountService(accountRepository)
+
+	// setup app
+	app := service.NewApp(accountService)
+
+	tel, err := Telegram.NewTelegram(app, os.Getenv("BOT_TOKEN"))
+	if err != nil {
+		logrus.WithError(err).Fatalln("could not create telegram bot")
+	}
+	logrus.Infoln("Connected to telegram successfully.")
+	tel.Start()
 }
 
 func init() {
