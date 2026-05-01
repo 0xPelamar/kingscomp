@@ -6,10 +6,10 @@ package cmd
 import (
 	"os"
 
-	"github.com/0xpelamar/kingscomp/internal/Telegram"
 	"github.com/0xpelamar/kingscomp/internal/repository"
 	"github.com/0xpelamar/kingscomp/internal/repository/redis"
 	"github.com/0xpelamar/kingscomp/internal/service"
+	"github.com/0xpelamar/kingscomp/internal/telegram"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -35,7 +35,7 @@ func serve(cmd *cobra.Command, args []string) {
 	// setup app
 	app := service.NewApp(accountService)
 
-	tel, err := Telegram.NewTelegram(app, os.Getenv("BOT_TOKEN"))
+	tel, err := telegram.NewTelegram(app, os.Getenv("BOT_TOKEN"))
 	if err != nil {
 		logrus.WithError(err).Fatalln("could not create telegram bot")
 	}
