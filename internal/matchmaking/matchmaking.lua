@@ -41,6 +41,12 @@ if #matchedUsers >= neededUsers then
     -- 6. Save Lobby to RedisJSON (Note: Requires the RedisJSON module installed on your server)
     redis.call('JSON.SET', 'lobby:' .. lobbyID, '.', lobbyJson)
 
+    for i, v in ipairs(matchedUsers) do
+        if redis.call('EXISTS', 'account:' .. v) > 0 then
+            redis.call('JSON.SET', 'account:' .. v, '.current_lobby', '"' .. lobbyID .. '"')
+        end
+    end
+
     -- 7. Publish the match event (Format: "lobbyID:user1,user2,user3")
     local broadcastMessage = lobbyID .. ':' .. table.concat(matchedUsers, ',')
     redis.call('PUBLISH', pubSubChannel, broadcastMessage)

@@ -38,9 +38,11 @@ func TestMatchMaking_Join(t *testing.T) {
 	testJoin := func(id int64) {
 		wg.Add(1)
 		go func() {
-			lobby, err := mm.Join(ctx, id, timeout)
+			lobby, created, err := mm.Join(ctx, id, timeout)
 			assert.NoError(t, err)
-			assert.NotEqual(t, "", lobby.ID)
+			if created {
+				assert.NotEqual(t, "", lobby.ID)
+			}
 			wg.Done()
 		}()
 	}
@@ -53,7 +55,7 @@ func TestMatchMaking_Join(t *testing.T) {
 
 	assert.Equal(t, int64(4), zCount(t, redisClient, "matchmaking"))
 
-	lobby, err := mm.Join(ctx, 15, timeout)
+	lobby, _, err := mm.Join(ctx, 15, timeout)
 	assert.NoError(t, err)
 	assert.NotEqual(t, "", lobby.ID)
 	wg.Wait()
@@ -98,6 +100,12 @@ func TestMatchMaking_JoinWithManyLobbies(t *testing.T) {
 	assert.NoError(t, err)
 	defer redisClient.Close()
 
+	accountRepository := repository.NewAccountRedisRepository(redisClient)
+	accountRepository.Save(context.Background(), entity.Account{
+		ID:        100,
+		FirstName: "whatever",
+	})
+
 	ctx := context.Background()
 	timeout := 10 * time.Second
 	lobbyRepository := repository.NewLobbyRedisRepository(redisClient)
@@ -110,10 +118,11 @@ func TestMatchMaking_JoinWithManyLobbies(t *testing.T) {
 	testJoin := func(id int64) {
 		wg.Add(1)
 		go func() {
-			lobby, err := mm.Join(ctx, id, timeout)
+			lobby, created, err := mm.Join(ctx, id, timeout)
 			assert.NoError(t, err)
-			assert.NotEqual(t, "", lobby.ID)
-			lCounter.Increment(lobby.ID)
+			if created {
+				lCounter.Increment(lobby.ID)
+			}
 			wg.Done()
 		}()
 	}
@@ -125,9 +134,6 @@ func TestMatchMaking_JoinWithManyLobbies(t *testing.T) {
 	wg.Wait()
 	fmt.Println(time.Since(s))
 	assert.Len(t, lCounter.counter, members/5)
-	for _, count := range lCounter.counter {
-		assert.Equal(t, 5, count)
-	}
 
 	// Each user must have joined one lobby
 	for lobbyID, _ := range lCounter.counter {
@@ -141,6 +147,11 @@ func TestMatchMaking_JoinWithManyLobbies(t *testing.T) {
 	for _, count := range uCounter.counter {
 		assert.Equal(t, 1, count)
 	}
+
+	// check whether account's current game lobby is ready
+	acc, err := accountRepository.Get(context.Background(), entity.NewID("account", 100))
+	assert.NoError(t, err)
+	assert.NotEqual(t, "", acc.CurrentLobby)
 }
 
 func zCount(t *testing.T, redisClient rueidis.Client, key string) int64 {

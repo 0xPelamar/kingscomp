@@ -4,15 +4,13 @@ import (
 	"context"
 	_ "embed"
 	"errors"
-	"slices"
+	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/0xpelamar/kingscomp/internal/entity"
 	"github.com/0xpelamar/kingscomp/internal/repository"
 	"github.com/google/uuid"
 	"github.com/redis/rueidis"
-	"github.com/samber/lo"
 	"github.com/sirupsen/logrus"
 
 	"time"
@@ -27,7 +25,7 @@ var (
 var matchMakingScript string
 
 type MatchMaking interface {
-	Join(ctx context.Context, userID int64, timeout time.Duration) (entity.Lobby, error)
+	Join(ctx context.Context, userID int64, timeout time.Duration) (entity.Lobby, bool, error)
 	Leave(ctx context.Context, userID int64) error
 }
 
@@ -53,23 +51,7 @@ type joinLobbyPubSubResponse struct {
 	lobbyID string
 }
 
-func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.Duration) (entity.Lobby, error) {
-	waitingLobbyCtx, lobbyContextCancel := context.WithTimeout(context.Background(), timeout)
-	defer lobbyContextCancel()
-
-	responeChannel := make(chan joinLobbyPubSubResponse, 1)
-	go r.client.Receive(waitingLobbyCtx, r.client.B().Subscribe().Channel("matchmaking").Build(), func(msg rueidis.PubSubMessage) {
-		message := strings.Split(msg.Message, ":")
-		lobbyID := message[0]
-		users := lo.Map(strings.Split(message[1], ","), func(item string, _ int) int64 {
-			id, _ := strconv.ParseInt(item, 10, 64)
-			return id
-		})
-		if !slices.Contains(users, userID) {
-			return
-		}
-		responeChannel <- joinLobbyPubSubResponse{lobbyID: lobbyID}
-	})
+func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.Duration) (entity.Lobby, bool, error) {
 	resp, err := r.matchMakingScript.Exec(ctx, r.client,
 		[]string{"matchmaking", "matchmaking"},
 		[]string{"5",
@@ -80,26 +62,27 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 		}).ToArray()
 	if err != nil {
 		logrus.WithError(err).Errorln("could not join the matchmaking")
-		return entity.Lobby{}, err
+		return entity.Lobby{}, false, err
 	}
 
 	// inside a queue, we must listen to the pub/sub
 	if len(resp) == 1 {
-		select {
-		case pubSubResponse := <-responeChannel:
-			return r.lobby.Get(ctx, entity.NewID("lobby", pubSubResponse.lobbyID))
-		case <-waitingLobbyCtx.Done():
-			return entity.Lobby{}, ErrTimeout
-		}
-
+		return entity.Lobby{}, false, nil
 	}
 	// just created a lobby
 	if len(resp) == 3 {
 		lobbyID, _ := resp[1].ToString()
-		return r.lobby.Get(ctx, entity.NewID("lobby", lobbyID))
+		lobby, err := r.lobby.Get(ctx, entity.NewID("lobby", lobbyID))
+
+		cmds := make([]rueidis.Completed, 0, 5)
+		for _, participant := range lobby.Participants {
+			cmds = append(cmds, r.client.B().JsonSet().Key(entity.NewID("account", participant).String()).Path("$.current_lobby").Value(fmt.Sprintf(`"%s"`, lobbyID)).Build())
+		}
+		_ = r.client.DoMulti(ctx, cmds...)
+		return lobby, true, err
 	}
 	logrus.WithError(err).Errorln("bad redis response")
-	return entity.Lobby{}, ErrBadRedisResponse
+	return entity.Lobby{}, false, ErrBadRedisResponse
 }
 
 func (r RedisMatchMaking) Leave(ctx context.Context, userID int64) error {
