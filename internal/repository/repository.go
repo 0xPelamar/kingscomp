@@ -17,3 +17,7 @@ type CommonBehaviour[T entity.Entity] interface {
 type AccountRepository interface {
 	CommonBehaviour[entity.Account]
 }
+
+type LobbyRepository interface {
+	CommonBehaviour[entity.Lobby]
+}
