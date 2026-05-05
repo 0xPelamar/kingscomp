@@ -10,7 +10,7 @@ func TestMain(m *testing.M) {
 	if os.Getenv("TEST_INTEGRATION") != "true" {
 		return
 	}
-	fmt.Println("Running integration tests...")
+	fmt.Println("Running integration tests for commonbehaviour...")
 	exitCode := m.Run()
 	os.Exit(exitCode)
 

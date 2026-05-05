@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/0xpelamar/kingscomp/internal/matchmaking"
 	"github.com/0xpelamar/kingscomp/internal/service"
 	"github.com/0xpelamar/kingscomp/internal/telegram/teleprompt"
 	"github.com/google/uuid"
@@ -16,13 +17,15 @@ type Telegram struct {
 	App *service.App
 	bot *telebot.Bot
 
-	TelePrompt *teleprompt.TelePrompt
+	TelePrompt  *teleprompt.TelePrompt
+	matchMaking matchmaking.MatchMaking
 }
 
-func NewTelegram(app *service.App, apiKey string) (*Telegram, error) {
+func NewTelegram(app *service.App, mm matchmaking.MatchMaking, apiKey string) (*Telegram, error) {
 	tel := &Telegram{
-		App:        app,
-		TelePrompt: teleprompt.NewTelePrompt(),
+		App:         app,
+		TelePrompt:  teleprompt.NewTelePrompt(),
+		matchMaking: mm,
 	}
 	pref := telebot.Settings{
 		Token:   apiKey,

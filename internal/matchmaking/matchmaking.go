@@ -21,6 +21,8 @@ var (
 	ErrTimeout          = errors.New("lobby queue timeout")
 )
 
+const MaxLobbyMembers = 5
+
 //go:embed matchmaking.lua
 var matchMakingScript string
 
@@ -35,6 +37,7 @@ type RedisMatchMaking struct {
 	client            rueidis.Client
 	matchMakingScript *rueidis.Lua
 	lobby             repository.LobbyRepository
+	account           repository.AccountRepository
 }
 
 func NewRedisMatchMaking(client rueidis.Client, lobby repository.LobbyRepository) *RedisMatchMaking {
@@ -46,15 +49,16 @@ func NewRedisMatchMaking(client rueidis.Client, lobby repository.LobbyRepository
 	}
 }
 
-type joinLobbyPubSubResponse struct {
-	err     error
-	lobbyID string
-}
-
 func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.Duration) (entity.Lobby, bool, error) {
+
+	defer func() {
+		removeFromQueue := r.client.B().Zrem().Key("matchmaking").Member(strconv.FormatInt(userID, 10)).Build()
+		r.client.Do(ctx, removeFromQueue)
+	}()
+
 	resp, err := r.matchMakingScript.Exec(ctx, r.client,
 		[]string{"matchmaking", "matchmaking"},
-		[]string{"5",
+		[]string{fmt.Sprint(MaxLobbyMembers),
 			strconv.FormatInt(time.Now().Add(-time.Minute*2).Unix(), 10),
 			uuid.New().String(),
 			strconv.FormatInt(userID, 10),
@@ -65,10 +69,29 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 		return entity.Lobby{}, false, err
 	}
 
-	// inside a queue, we must listen to the pub/sub
+	// inside a queue
 	if len(resp) == 1 {
-		return entity.Lobby{}, false, nil
+		logrus.WithField("userId", userID).Info("waiting for a lobby")
+		cmd := r.client.B().Brpop().Key(fmt.Sprintf("matchmaking:%d", userID)).Timeout(timeout.Seconds()).Build()
+		result, err := r.client.Do(ctx, cmd).AsStrSlice()
+		if err != nil {
+			if errors.Is(err, rueidis.Nil) {
+				return entity.Lobby{}, false, nil
+			}
+			logrus.WithError(err).Errorln("could not get matchmaking notice from redis")
+			return entity.Lobby{}, false, err
+		}
+		if len(result) < 2 {
+			return entity.Lobby{}, false, ErrTimeout
+		}
+		logrus.WithFields(logrus.Fields{
+			"userID": userID,
+			"lobby":  result[1],
+		}).Info("found a new lobby")
+		lobby, err := r.lobby.Get(ctx, entity.NewID("lobby", result[1]))
+		return lobby, false, err
 	}
+
 	// just created a lobby
 	if len(resp) == 3 {
 		lobbyID, _ := resp[1].ToString()

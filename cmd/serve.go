@@ -6,6 +6,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/0xpelamar/kingscomp/internal/matchmaking"
 	"github.com/0xpelamar/kingscomp/internal/repository"
 	"github.com/0xpelamar/kingscomp/internal/repository/redis"
 	"github.com/0xpelamar/kingscomp/internal/service"
@@ -31,11 +32,13 @@ func serve(cmd *cobra.Command, args []string) {
 	logrus.Infoln("Connected to redis successfully.")
 	accountRepository := repository.NewAccountRedisRepository(redisClient)
 	accountService := service.NewAccountService(accountRepository)
+	lobbyRepository := repository.NewLobbyRedisRepository(redisClient)
 
 	// setup app
 	app := service.NewApp(accountService)
 
-	tel, err := telegram.NewTelegram(app, os.Getenv("BOT_TOKEN"))
+	mm := matchmaking.NewRedisMatchMaking(redisClient, lobbyRepository)
+	tel, err := telegram.NewTelegram(app, mm, os.Getenv("BOT_TOKEN"))
 	if err != nil {
 		logrus.WithError(err).Fatalln("could not create telegram bot")
 	}

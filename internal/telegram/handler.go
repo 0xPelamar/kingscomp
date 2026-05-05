@@ -15,6 +15,7 @@ func (t *Telegram) setupHandlers() {
 	t.bot.Handle("/start", t.start)
 	t.bot.Handle(telebot.OnText, t.textHandler)
 	t.bot.Handle(&btnEditDisplayName, t.editDisplayName)
+	t.bot.Handle(&btnJoinMatchMaking, t.joinMatchMaking)
 
 }
 
