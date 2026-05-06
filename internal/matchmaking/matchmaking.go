@@ -71,7 +71,7 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 
 	// inside a queue
 	if len(resp) == 1 {
-		logrus.WithField("userId", userID).Info("waiting for a lobby")
+		//logrus.WithField("userId", userID).Info("waiting for a lobby")
 		cmd := r.client.B().Brpop().Key(fmt.Sprintf("matchmaking:%d", userID)).Timeout(timeout.Seconds()).Build()
 		result, err := r.client.Do(ctx, cmd).AsStrSlice()
 		if err != nil {
@@ -84,10 +84,10 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 		if len(result) < 2 {
 			return entity.Lobby{}, false, ErrTimeout
 		}
-		logrus.WithFields(logrus.Fields{
-			"userID": userID,
-			"lobby":  result[1],
-		}).Info("found a new lobby")
+		//logrus.WithFields(logrus.Fields{
+		//	"userID": userID,
+		//	"lobby":  result[1],
+		//}).Info("found a new lobby")
 		lobby, err := r.lobby.Get(ctx, entity.NewID("lobby", result[1]))
 		return lobby, false, err
 	}

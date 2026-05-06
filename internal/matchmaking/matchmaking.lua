@@ -42,9 +42,11 @@ if #matchedUsers >= neededUsers then
     redis.call('JSON.SET', 'lobby:' .. lobbyID, '.', lobbyJson)
 
     for i, v in ipairs(matchedUsers) do
-        local listKey = 'matchmaking:' .. v
-        redis.call('RPUSH', listKey, lobbyID)
-        redis.call('EXPIRE', listKey, 120)
+        if v ~= userID then
+            local listKey = 'matchmaking:' .. v
+            redis.call('RPUSH', listKey, lobbyID)
+            redis.call('EXPIRE', listKey, 120)
+        end
     end
 
     -- Return success, the lobby ID, and the player array

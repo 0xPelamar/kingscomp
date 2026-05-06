@@ -26,11 +26,11 @@ func (t *Telegram) joinMatchMaking(c telebot.Context) error {
 	ch := make(chan struct{}, 1)
 	var lobby entity.Lobby
 	go func() {
-		lobby, _, err = t.matchMaking.Join(context.Background(), c.Sender().ID, time.Minute*2)
+		lobby, _, err = t.matchMaking.Join(context.Background(), c.Sender().ID, 10*time.Second)
 		ch <- struct{}{}
 	}()
 
-	ticker := time.NewTicker(DefualtMatchMakingLoadingInterval)
+	ticker := time.NewTicker(DefaultMatchMakingLoadingInterval)
 	loadingMessage, err := c.Bot().Send(c.Sender(), "Searching.. please wait...")
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ loading:
 		select {
 		case <-ticker.C:
 			took := int(time.Since(s).Seconds())
-			c.Bot().Edit(loadingMessage, fmt.Sprintf("Searching for player... %d seconds took of %d", took, DefaultMatchMakingTimeout))
+			c.Bot().Edit(loadingMessage, fmt.Sprintf("Searching for player... %d seconds took of %d", took, int(DefaultMatchMakingTimeout.Seconds())))
 			continue
 
 		case <-ch:
