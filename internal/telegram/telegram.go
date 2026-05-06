@@ -45,7 +45,7 @@ func NewTelegram(app *service.App, mm matchmaking.MatchMaking, apiKey string) (*
 }
 
 func (t *Telegram) onError(err error, c telebot.Context) {
-	if errors.Is(err, ErrInputTimeout) {
+	if errors.Is(err, ErrInputTimeout) || errors.Is(err, teleprompt.ErrIsCanceled) {
 		return
 	}
 	errorID := uuid.New().String()

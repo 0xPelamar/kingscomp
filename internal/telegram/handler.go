@@ -24,5 +24,5 @@ func (t *Telegram) textHandler(c telebot.Context) error {
 		return nil
 	}
 	// TODO: per state
-	return c.Reply("I did not understand (dispatch failed)")
+	return t.myInfo(c)
 }

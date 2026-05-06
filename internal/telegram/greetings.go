@@ -23,6 +23,13 @@ func (t *Telegram) start(c telebot.Context) error {
 func (t *Telegram) myInfo(c telebot.Context) error {
 	account := getAccount(c)
 	selector := &telebot.ReplyMarkup{}
-	selector.Inline(selector.Row(btnEditDisplayName, btnJoinMatchMaking))
+	var rows []telebot.Row
+	rows = append(rows, selector.Row(btnEditDisplayName))
+	if account.CurrentLobby != "" {
+		rows = append(rows, selector.Row(btnCurrentMatch))
+	} else {
+		rows = append(rows, selector.Row(btnJoinMatchMaking))
+	}
+	selector.Inline(rows...)
 	return c.Send(fmt.Sprintf("🏰 King «%s»\nWelcome to the Kings Combat\nWhat can I do for you?", account.DisplayName), selector)
 }

@@ -4,14 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/0xpelamar/kingscomp/internal/entity"
 	"github.com/0xpelamar/kingscomp/internal/matchmaking"
+	"github.com/samber/lo"
 	"gopkg.in/telebot.v4"
 )
 
 func (t *Telegram) joinMatchMaking(c telebot.Context) error {
+	myAccount := getAccount(c)
+	if myAccount.CurrentLobby != "" { // TODO: Show the current game status
+		return c.Reply("You already have a lobby with this account")
+	}
 	msg, err := t.Input(c, InputConfig{
 		Prompt:         "⏰ Each game takes about 5 minutes and if you leave the game you lose \nDo you start the game??",
 		PromptKeyboard: [][]string{{TxtDecline, TxtConfirm}},
@@ -58,6 +64,15 @@ loading:
 		}
 		return err
 	}
+	lobby, accounts, err := t.App.LobbyPlayers(context.Background(), lobby.ID)
+	if err != nil {
+		return err
+	}
+	return c.Send(fmt.Sprintf("🏆 New game started\nLobby: %s\nPlayers: %s", lobby.ID, strings.Join(lo.Map(accounts, func(item entity.Account, _ int) string {
+		if myAccount.ID == item.ID {
+			return "You"
+		}
 
-	return c.Send(fmt.Sprintf("you have joined lobby: %s", lobby.ID))
+		return fmt.Sprintf("🎴 %s %d", item.FirstName, item.ID)
+	}), "\n")))
 }

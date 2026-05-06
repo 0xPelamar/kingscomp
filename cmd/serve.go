@@ -31,11 +31,13 @@ func serve(cmd *cobra.Command, args []string) {
 	}
 	logrus.Infoln("Connected to redis successfully.")
 	accountRepository := repository.NewAccountRedisRepository(redisClient)
-	accountService := service.NewAccountService(accountRepository)
 	lobbyRepository := repository.NewLobbyRedisRepository(redisClient)
 
 	// setup app
-	app := service.NewApp(accountService)
+	app := service.NewApp(
+		service.NewAccountService(accountRepository),
+		service.NewLobbyService(lobbyRepository),
+	)
 
 	mm := matchmaking.NewRedisMatchMaking(redisClient, lobbyRepository)
 	tel, err := telegram.NewTelegram(app, mm, os.Getenv("BOT_TOKEN"))
