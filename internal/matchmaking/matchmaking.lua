@@ -42,18 +42,13 @@ if #matchedUsers >= neededUsers then
     redis.call('JSON.SET', 'lobby:' .. lobbyID, '.', lobbyJson)
 
     for i, v in ipairs(matchedUsers) do
-        if redis.call('EXISTS', 'account:' .. v) > 0 then
-            redis.call('JSON.SET', 'account:' .. v, '.current_lobby', '"' .. lobbyID .. '"')
-        end
+        local listKey = 'matchmaking:' .. v
+        redis.call('RPUSH', listKey, lobbyID)
+        redis.call('EXPIRE', listKey, 120)
     end
 
-    -- 7. Publish the match event (Format: "lobbyID:user1,user2,user3")
-    local broadcastMessage = lobbyID .. ':' .. table.concat(matchedUsers, ',')
-    redis.call('PUBLISH', pubSubChannel, broadcastMessage)
-
-    -- Return success (1 = true in Redis), the lobby ID, and the player array
-    return {1, lobbyID, matchedUsers}
-
+    -- Return success, the lobby ID, and the player array
+    return {true, lobbyID, matchedUsers}
 else
     -- Not enough users found. Add the current user to the queue to wait.
     redis.call('ZADD', queueKey, userScore, userID)

@@ -76,7 +76,7 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 		result, err := r.client.Do(ctx, cmd).AsStrSlice()
 		if err != nil {
 			if errors.Is(err, rueidis.Nil) {
-				return entity.Lobby{}, false, nil
+				return entity.Lobby{}, false, ErrTimeout
 			}
 			logrus.WithError(err).Errorln("could not get matchmaking notice from redis")
 			return entity.Lobby{}, false, err
