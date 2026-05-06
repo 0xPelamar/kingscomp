@@ -12,6 +12,7 @@ var ErrNotFound = errors.New("entity not found")
 type CommonBehaviour[T entity.Entity] interface {
 	Get(context.Context, entity.ID) (T, error)
 	Save(context.Context, T) error
+	Mget(ctx context.Context, IDs ...entity.ID) ([]T, error)
 }
 
 type AccountRepository interface {
@@ -20,4 +21,5 @@ type AccountRepository interface {
 
 type LobbyRepository interface {
 	CommonBehaviour[entity.Lobby]
+	LobbyPlayers(ctx context.Context, LobbyID entity.ID) ([]entity.Account, error)
 }

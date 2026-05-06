@@ -106,6 +106,83 @@ func (_c *MockCommonBehaviour_Get_Call[T]) RunAndReturn(run func(context1 contex
 	return _c
 }
 
+// Mget provides a mock function for the type MockCommonBehaviour
+func (_mock *MockCommonBehaviour[T]) Mget(ctx context.Context, IDs ...entity.ID) ([]T, error) {
+	var tmpRet mock.Arguments
+	if len(IDs) > 0 {
+		tmpRet = _mock.Called(ctx, IDs)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for Mget")
+	}
+
+	var r0 []T
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.ID) ([]T, error)); ok {
+		return returnFunc(ctx, IDs...)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.ID) []T); ok {
+		r0 = returnFunc(ctx, IDs...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]T)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, ...entity.ID) error); ok {
+		r1 = returnFunc(ctx, IDs...)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockCommonBehaviour_Mget_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Mget'
+type MockCommonBehaviour_Mget_Call[T entity.Entity] struct {
+	*mock.Call
+}
+
+// Mget is a helper method to define mock.On call
+//   - ctx context.Context
+//   - IDs ...entity.ID
+func (_e *MockCommonBehaviour_Expecter[T]) Mget(ctx interface{}, IDs ...interface{}) *MockCommonBehaviour_Mget_Call[T] {
+	return &MockCommonBehaviour_Mget_Call[T]{Call: _e.mock.On("Mget",
+		append([]interface{}{ctx}, IDs...)...)}
+}
+
+func (_c *MockCommonBehaviour_Mget_Call[T]) Run(run func(ctx context.Context, IDs ...entity.ID)) *MockCommonBehaviour_Mget_Call[T] {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []entity.ID
+		var variadicArgs []entity.ID
+		if len(args) > 1 {
+			variadicArgs = args[1].([]entity.ID)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockCommonBehaviour_Mget_Call[T]) Return(vs []T, err error) *MockCommonBehaviour_Mget_Call[T] {
+	_c.Call.Return(vs, err)
+	return _c
+}
+
+func (_c *MockCommonBehaviour_Mget_Call[T]) RunAndReturn(run func(ctx context.Context, IDs ...entity.ID) ([]T, error)) *MockCommonBehaviour_Mget_Call[T] {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Save provides a mock function for the type MockCommonBehaviour
 func (_mock *MockCommonBehaviour[T]) Save(context1 context.Context, v T) error {
 	ret := _mock.Called(context1, v)
@@ -256,6 +333,83 @@ func (_c *MockAccountRepository_Get_Call) RunAndReturn(run func(context1 context
 	return _c
 }
 
+// Mget provides a mock function for the type MockAccountRepository
+func (_mock *MockAccountRepository) Mget(ctx context.Context, IDs ...entity.ID) ([]entity.Account, error) {
+	var tmpRet mock.Arguments
+	if len(IDs) > 0 {
+		tmpRet = _mock.Called(ctx, IDs)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for Mget")
+	}
+
+	var r0 []entity.Account
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.ID) ([]entity.Account, error)); ok {
+		return returnFunc(ctx, IDs...)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.ID) []entity.Account); ok {
+		r0 = returnFunc(ctx, IDs...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]entity.Account)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, ...entity.ID) error); ok {
+		r1 = returnFunc(ctx, IDs...)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockAccountRepository_Mget_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Mget'
+type MockAccountRepository_Mget_Call struct {
+	*mock.Call
+}
+
+// Mget is a helper method to define mock.On call
+//   - ctx context.Context
+//   - IDs ...entity.ID
+func (_e *MockAccountRepository_Expecter) Mget(ctx interface{}, IDs ...interface{}) *MockAccountRepository_Mget_Call {
+	return &MockAccountRepository_Mget_Call{Call: _e.mock.On("Mget",
+		append([]interface{}{ctx}, IDs...)...)}
+}
+
+func (_c *MockAccountRepository_Mget_Call) Run(run func(ctx context.Context, IDs ...entity.ID)) *MockAccountRepository_Mget_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []entity.ID
+		var variadicArgs []entity.ID
+		if len(args) > 1 {
+			variadicArgs = args[1].([]entity.ID)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockAccountRepository_Mget_Call) Return(accounts []entity.Account, err error) *MockAccountRepository_Mget_Call {
+	_c.Call.Return(accounts, err)
+	return _c
+}
+
+func (_c *MockAccountRepository_Mget_Call) RunAndReturn(run func(ctx context.Context, IDs ...entity.ID) ([]entity.Account, error)) *MockAccountRepository_Mget_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Save provides a mock function for the type MockAccountRepository
 func (_mock *MockAccountRepository) Save(context1 context.Context, account entity.Account) error {
 	ret := _mock.Called(context1, account)
@@ -309,6 +463,301 @@ func (_c *MockAccountRepository_Save_Call) Return(err error) *MockAccountReposit
 }
 
 func (_c *MockAccountRepository_Save_Call) RunAndReturn(run func(context1 context.Context, account entity.Account) error) *MockAccountRepository_Save_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// NewMockLobbyRepository creates a new instance of MockLobbyRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
+// The first argument is typically a *testing.T value.
+func NewMockLobbyRepository(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *MockLobbyRepository {
+	mock := &MockLobbyRepository{}
+	mock.Mock.Test(t)
+
+	t.Cleanup(func() { mock.AssertExpectations(t) })
+
+	return mock
+}
+
+// MockLobbyRepository is an autogenerated mock type for the LobbyRepository type
+type MockLobbyRepository struct {
+	mock.Mock
+}
+
+type MockLobbyRepository_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *MockLobbyRepository) EXPECT() *MockLobbyRepository_Expecter {
+	return &MockLobbyRepository_Expecter{mock: &_m.Mock}
+}
+
+// Get provides a mock function for the type MockLobbyRepository
+func (_mock *MockLobbyRepository) Get(context1 context.Context, iD entity.ID) (entity.Lobby, error) {
+	ret := _mock.Called(context1, iD)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Get")
+	}
+
+	var r0 entity.Lobby
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, entity.ID) (entity.Lobby, error)); ok {
+		return returnFunc(context1, iD)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, entity.ID) entity.Lobby); ok {
+		r0 = returnFunc(context1, iD)
+	} else {
+		r0 = ret.Get(0).(entity.Lobby)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, entity.ID) error); ok {
+		r1 = returnFunc(context1, iD)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockLobbyRepository_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockLobbyRepository_Get_Call struct {
+	*mock.Call
+}
+
+// Get is a helper method to define mock.On call
+//   - context1 context.Context
+//   - iD entity.ID
+func (_e *MockLobbyRepository_Expecter) Get(context1 interface{}, iD interface{}) *MockLobbyRepository_Get_Call {
+	return &MockLobbyRepository_Get_Call{Call: _e.mock.On("Get", context1, iD)}
+}
+
+func (_c *MockLobbyRepository_Get_Call) Run(run func(context1 context.Context, iD entity.ID)) *MockLobbyRepository_Get_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 entity.ID
+		if args[1] != nil {
+			arg1 = args[1].(entity.ID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockLobbyRepository_Get_Call) Return(lobby entity.Lobby, err error) *MockLobbyRepository_Get_Call {
+	_c.Call.Return(lobby, err)
+	return _c
+}
+
+func (_c *MockLobbyRepository_Get_Call) RunAndReturn(run func(context1 context.Context, iD entity.ID) (entity.Lobby, error)) *MockLobbyRepository_Get_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// LobbyPlayers provides a mock function for the type MockLobbyRepository
+func (_mock *MockLobbyRepository) LobbyPlayers(ctx context.Context, LobbyID entity.ID) ([]entity.Account, error) {
+	ret := _mock.Called(ctx, LobbyID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LobbyPlayers")
+	}
+
+	var r0 []entity.Account
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, entity.ID) ([]entity.Account, error)); ok {
+		return returnFunc(ctx, LobbyID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, entity.ID) []entity.Account); ok {
+		r0 = returnFunc(ctx, LobbyID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]entity.Account)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, entity.ID) error); ok {
+		r1 = returnFunc(ctx, LobbyID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockLobbyRepository_LobbyPlayers_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LobbyPlayers'
+type MockLobbyRepository_LobbyPlayers_Call struct {
+	*mock.Call
+}
+
+// LobbyPlayers is a helper method to define mock.On call
+//   - ctx context.Context
+//   - LobbyID entity.ID
+func (_e *MockLobbyRepository_Expecter) LobbyPlayers(ctx interface{}, LobbyID interface{}) *MockLobbyRepository_LobbyPlayers_Call {
+	return &MockLobbyRepository_LobbyPlayers_Call{Call: _e.mock.On("LobbyPlayers", ctx, LobbyID)}
+}
+
+func (_c *MockLobbyRepository_LobbyPlayers_Call) Run(run func(ctx context.Context, LobbyID entity.ID)) *MockLobbyRepository_LobbyPlayers_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 entity.ID
+		if args[1] != nil {
+			arg1 = args[1].(entity.ID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockLobbyRepository_LobbyPlayers_Call) Return(accounts []entity.Account, err error) *MockLobbyRepository_LobbyPlayers_Call {
+	_c.Call.Return(accounts, err)
+	return _c
+}
+
+func (_c *MockLobbyRepository_LobbyPlayers_Call) RunAndReturn(run func(ctx context.Context, LobbyID entity.ID) ([]entity.Account, error)) *MockLobbyRepository_LobbyPlayers_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Mget provides a mock function for the type MockLobbyRepository
+func (_mock *MockLobbyRepository) Mget(ctx context.Context, IDs ...entity.ID) ([]entity.Lobby, error) {
+	var tmpRet mock.Arguments
+	if len(IDs) > 0 {
+		tmpRet = _mock.Called(ctx, IDs)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for Mget")
+	}
+
+	var r0 []entity.Lobby
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.ID) ([]entity.Lobby, error)); ok {
+		return returnFunc(ctx, IDs...)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.ID) []entity.Lobby); ok {
+		r0 = returnFunc(ctx, IDs...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]entity.Lobby)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, ...entity.ID) error); ok {
+		r1 = returnFunc(ctx, IDs...)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockLobbyRepository_Mget_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Mget'
+type MockLobbyRepository_Mget_Call struct {
+	*mock.Call
+}
+
+// Mget is a helper method to define mock.On call
+//   - ctx context.Context
+//   - IDs ...entity.ID
+func (_e *MockLobbyRepository_Expecter) Mget(ctx interface{}, IDs ...interface{}) *MockLobbyRepository_Mget_Call {
+	return &MockLobbyRepository_Mget_Call{Call: _e.mock.On("Mget",
+		append([]interface{}{ctx}, IDs...)...)}
+}
+
+func (_c *MockLobbyRepository_Mget_Call) Run(run func(ctx context.Context, IDs ...entity.ID)) *MockLobbyRepository_Mget_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []entity.ID
+		var variadicArgs []entity.ID
+		if len(args) > 1 {
+			variadicArgs = args[1].([]entity.ID)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockLobbyRepository_Mget_Call) Return(lobbys []entity.Lobby, err error) *MockLobbyRepository_Mget_Call {
+	_c.Call.Return(lobbys, err)
+	return _c
+}
+
+func (_c *MockLobbyRepository_Mget_Call) RunAndReturn(run func(ctx context.Context, IDs ...entity.ID) ([]entity.Lobby, error)) *MockLobbyRepository_Mget_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Save provides a mock function for the type MockLobbyRepository
+func (_mock *MockLobbyRepository) Save(context1 context.Context, lobby entity.Lobby) error {
+	ret := _mock.Called(context1, lobby)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Save")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, entity.Lobby) error); ok {
+		r0 = returnFunc(context1, lobby)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockLobbyRepository_Save_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Save'
+type MockLobbyRepository_Save_Call struct {
+	*mock.Call
+}
+
+// Save is a helper method to define mock.On call
+//   - context1 context.Context
+//   - lobby entity.Lobby
+func (_e *MockLobbyRepository_Expecter) Save(context1 interface{}, lobby interface{}) *MockLobbyRepository_Save_Call {
+	return &MockLobbyRepository_Save_Call{Call: _e.mock.On("Save", context1, lobby)}
+}
+
+func (_c *MockLobbyRepository_Save_Call) Run(run func(context1 context.Context, lobby entity.Lobby)) *MockLobbyRepository_Save_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 entity.Lobby
+		if args[1] != nil {
+			arg1 = args[1].(entity.Lobby)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockLobbyRepository_Save_Call) Return(err error) *MockLobbyRepository_Save_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockLobbyRepository_Save_Call) RunAndReturn(run func(context1 context.Context, lobby entity.Lobby) error) *MockLobbyRepository_Save_Call {
 	_c.Call.Return(run)
 	return _c
 }

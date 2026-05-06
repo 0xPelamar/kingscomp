@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/0xpelamar/kingscomp/internal/entity"
 	"github.com/redis/rueidis"
 )
@@ -15,4 +17,12 @@ func NewLobbyRedisRepository(client rueidis.Client) *LobbyRedisRepository {
 	return &LobbyRedisRepository{
 		NewRedisCommonBehaviour[entity.Lobby](client),
 	}
+}
+
+func (l *LobbyRedisRepository) LobbyPlayers(ctx context.Context, lobbyID entity.ID) ([]entity.Account, error) {
+	//lobby, err := l.Get(ctx, lobbyID)
+	//if err != nil {
+	//	return nil, err
+	//}
+	panic("")
 }
