@@ -64,15 +64,25 @@ loading:
 		}
 		return err
 	}
-	lobby, accounts, err := t.App.LobbyPlayers(context.Background(), lobby.ID)
+	myAccount.CurrentLobby = lobby.ID
+	c.Set("account", myAccount)
+	return t.currentLobby(c)
+
+}
+
+func (t *Telegram) currentLobby(c telebot.Context) error {
+	myAccount := getAccount(c)
+	lobby, accounts, err := t.App.LobbyPlayers(context.Background(), myAccount.CurrentLobby)
 	if err != nil {
 		return err
 	}
-	return c.Send(fmt.Sprintf("🏆 New game started\nLobby: %s\nPlayers: %s", lobby.ID, strings.Join(lo.Map(accounts, func(item entity.Account, _ int) string {
+	selector := &telebot.ReplyMarkup{}
+	selector.Inline(selector.Row(btnResignMatch, btnStartGameWebapp))
+	return c.Send(fmt.Sprintf("🏆 Your running game:\nLobby: %s\nPlayers: %s", lobby.ID, strings.Join(lo.Map(accounts, func(item entity.Account, _ int) string {
 		if myAccount.ID == item.ID {
 			return "You"
 		}
 
 		return fmt.Sprintf("🎴 %s %d", item.FirstName, item.ID)
-	}), "\n")))
+	}), "\n")), selector)
 }

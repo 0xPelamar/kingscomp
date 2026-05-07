@@ -35,7 +35,8 @@ if #matchedUsers >= neededUsers then
         id = lobbyID,
         participants = matchedUsers,
         created_at = tonumber(userScore), -- Store as a number in the JSON document
-        state = 'created'
+        state = 'created',
+        resigned = {}
     }
     local lobbyJson = cjson.encode(lobby)
     -- 6. Save Lobby to RedisJSON (Note: Requires the RedisJSON module installed on your server)

@@ -21,6 +21,9 @@ var (
 	btnEditDisplayName = selector.Data("✏️ Edit Name", "btnEditName")
 	btnJoinMatchMaking = selector.Data("🎮 Join new game", "btnJoinMatchMaking")
 	btnCurrentMatch    = selector.Data("🕹 Current Match", "btnCurrentMatch")
+	btnResignMatch     = selector.Data("🏳️ Resign Match", "btnResignMatch")
+	btnStartGameWebapp = selector.Data("🎮 Starting game", "btnStartGameWebapp")
+)
 
 func getAccount(c telebot.Context) entity.Account {
 	return c.Get("account").(entity.Account)
