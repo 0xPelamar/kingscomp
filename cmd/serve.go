@@ -11,6 +11,7 @@ import (
 	"github.com/0xpelamar/kingscomp/internal/repository/redis"
 	"github.com/0xpelamar/kingscomp/internal/service"
 	"github.com/0xpelamar/kingscomp/internal/telegram"
+	"github.com/0xpelamar/kingscomp/internal/webapp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -45,7 +46,17 @@ func serve(cmd *cobra.Command, args []string) {
 		logrus.WithError(err).Fatalln("could not create telegram bot")
 	}
 	logrus.Infoln("Connected to telegram successfully.")
-	tel.Start()
+
+	go tel.Start()
+
+	wa := webapp.NewWebApp(app, "0.0.0.0:8080")
+
+	if os.Getenv("env") == "local" {
+		// TODO
+	}
+
+	wa.Start()
+
 }
 
 func init() {

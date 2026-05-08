@@ -3,3 +3,7 @@ test-integration:
 
 start:
 	go run main.go serve
+
+dev:
+	templ generate
+	go run main.go serve
