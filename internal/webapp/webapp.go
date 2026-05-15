@@ -10,17 +10,19 @@ import (
 )
 
 type WebApp struct {
-	App  *service.App
-	e    *echo.Echo
-	addr string
+	App              *service.App
+	e                *echo.Echo
+	addr             string
+	telegramBotToken string
 }
 
-func NewWebApp(app *service.App, addr string) *WebApp {
+func NewWebApp(app *service.App, addr string, telegramBotToken string) *WebApp {
 	e := echo.New()
 	wa := &WebApp{
-		App:  app,
-		e:    e,
-		addr: addr,
+		App:              app,
+		e:                e,
+		addr:             addr,
+		telegramBotToken: telegramBotToken,
 	}
 	wa.urls()
 	return wa

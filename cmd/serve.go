@@ -1,11 +1,12 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
+	"context"
+	"fmt"
+	"net/url"
 	"os"
 
+	"github.com/0xpelamar/kingscomp/internal/config"
 	"github.com/0xpelamar/kingscomp/internal/matchmaking"
 	"github.com/0xpelamar/kingscomp/internal/repository"
 	"github.com/0xpelamar/kingscomp/internal/repository/redis"
@@ -14,6 +15,8 @@ import (
 	"github.com/0xpelamar/kingscomp/internal/webapp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"golang.ngrok.com/ngrok"
+	nconfig "golang.ngrok.com/ngrok/config"
 )
 
 // serveCmd represents the serve command
@@ -49,13 +52,34 @@ func serve(cmd *cobra.Command, args []string) {
 
 	go tel.Start()
 
-	wa := webapp.NewWebApp(app, "0.0.0.0:8080")
+	wa := webapp.NewWebApp(app, "0.0.0.0:8080", os.Getenv("BOT_TOKEN"))
 
-	if os.Getenv("env") == "local" {
-		// TODO
+	// Use ngrok if it's local
+	if os.Getenv("ENV") == "local" {
+		proxyURL, err := url.Parse("socks5://127.0.0.1:10808")
+		if err != nil {
+			logrus.WithError(err).Fatalln("could not parse proxy url")
+		}
+		fmt.Println(os.Getenv("NGROK_AUTHTOKEN"))
+		listener, err := ngrok.Listen(
+			context.Background(),
+			nconfig.HTTPEndpoint(),
+			ngrok.WithAuthtokenFromEnv(),
+			ngrok.WithProxyURL(proxyURL),
+		)
+		fmt.Println("Running in local mode")
+
+		if err != nil {
+			logrus.WithError(err).Fatalln("could not forward ngrok")
+		}
+		config.Default.WebAppAddr = "https://" + listener.Addr().String()
+		fmt.Println(config.Default.WebAppAddr)
+		logrus.Infof("Web App is available at: %s", config.Default.WebAppAddr)
+		if err := wa.StartDev(listener); err != nil {
+			logrus.WithError(err).Fatalln("could not start webapp with ngrok")
+		}
+
 	}
-
-	wa.Start()
 
 }
 

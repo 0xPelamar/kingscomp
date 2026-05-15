@@ -1,0 +1,28 @@
+package views
+
+templ LobbyIndex() {
+    @Template() {
+        <h1>Hello, World!</h1>
+        <p> whatever</p>
+        <script>
+          (async () =>{
+            let response = await fetch("/auth/validate", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                initData: window.Telegram.WebApp.initData
+              })
+            })
+
+            response = await response.json()
+            if (!response["data"]["is_valid"]) {
+                alert("data is not valid")
+                return
+            }
+            alert(JSON.stringify(window.Telegram.WebApp.initDataUnsafe))
+          })()
+        </script>
+    }
+}

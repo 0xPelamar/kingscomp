@@ -1,8 +1,7 @@
 package webapp
 
 import (
-	"net/http"
-
+	"github.com/0xpelamar/kingscomp/internal/webapp/views"
 	"github.com/labstack/echo/v4"
 )
 
@@ -12,8 +11,7 @@ func (w *WebApp) lobbyIndex(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, map[string]any{
-		"players": players,
-		"lobby":   lobby,
-	})
+	_, _ = lobby, players
+	return HTML(c, views.LobbyIndex())
+
 }

@@ -79,10 +79,10 @@ func (t *Telegram) currentLobby(c telebot.Context) error {
 	selector := &telebot.ReplyMarkup{}
 	selector.Inline(selector.Row(btnResignMatch, NewStartWebApp(lobby.ID)))
 	return c.Send(fmt.Sprintf("🏆 Your running game:\nLobby: %s\nPlayers: %s", lobby.ID, strings.Join(lo.Map(accounts, func(item entity.Account, _ int) string {
+		player := fmt.Sprintf("🎴 %s %d", item.FirstName, item.ID)
 		if myAccount.ID == item.ID {
-			return "You"
+			player = player + " (You)"
 		}
-
-		return fmt.Sprintf("🎴 %s %d", item.FirstName, item.ID)
+		return player
 	}), "\n")), selector)
 }
