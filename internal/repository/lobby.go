@@ -20,9 +20,5 @@ func NewLobbyRedisRepository(client rueidis.Client) *LobbyRedisRepository {
 }
 
 func (l *LobbyRedisRepository) LobbyPlayers(ctx context.Context, lobbyID entity.ID) ([]entity.Account, error) {
-	//lobby, err := l.Get(ctx, lobbyID)
-	//if err != nil {
-	//	return nil, err
-	//}
 	panic("")
 }

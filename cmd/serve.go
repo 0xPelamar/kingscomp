@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 	"os"
 
@@ -60,25 +59,27 @@ func serve(cmd *cobra.Command, args []string) {
 		if err != nil {
 			logrus.WithError(err).Fatalln("could not parse proxy url")
 		}
-		fmt.Println(os.Getenv("NGROK_AUTHTOKEN"))
 		listener, err := ngrok.Listen(
 			context.Background(),
 			nconfig.HTTPEndpoint(),
 			ngrok.WithAuthtokenFromEnv(),
 			ngrok.WithProxyURL(proxyURL),
 		)
-		fmt.Println("Running in local mode")
+		logrus.Infoln("Running the web app in local mode")
 
 		if err != nil {
 			logrus.WithError(err).Fatalln("could not forward ngrok")
 		}
 		config.Default.WebAppAddr = "https://" + listener.Addr().String()
-		fmt.Println(config.Default.WebAppAddr)
 		logrus.Infof("Web App is available at: %s", config.Default.WebAppAddr)
 		if err := wa.StartDev(listener); err != nil {
 			logrus.WithError(err).Fatalln("could not start webapp with ngrok")
 		}
 
+	} else {
+		if err := wa.Start(); err != nil {
+			logrus.WithError(err).Fatalln("could not start webapp")
+		}
 	}
 
 }

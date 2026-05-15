@@ -24,7 +24,7 @@ func NewAccountService(accountRepository repository.AccountRepository) *AccountS
 
 func (a *AccountService) CreateOrUpdate(ctx context.Context, account entity.Account) (entity.Account, bool, error) {
 	savedAccount, err := a.Account.Get(ctx, account.EntityID())
-	// user exists in the database
+	// user exists in the redis
 	if err == nil {
 		if savedAccount.FirstName != account.FirstName ||
 			savedAccount.LastName != account.LastName ||
@@ -37,7 +37,7 @@ func (a *AccountService) CreateOrUpdate(ctx context.Context, account entity.Acco
 		return savedAccount, false, nil
 	}
 
-	// user does not exist in the database
+	// user does not exist in the redis
 	if errors.Is(err, repository.ErrNotFound) {
 		account.JoinedAt = time.Now()
 		account.State = DefaultState

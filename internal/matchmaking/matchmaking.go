@@ -50,14 +50,13 @@ func NewRedisMatchMaking(client rueidis.Client, lobby repository.LobbyRepository
 }
 
 func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.Duration) (entity.Lobby, bool, error) {
-
 	defer func() {
 		removeFromQueue := r.client.B().Zrem().Key("matchmaking").Member(strconv.FormatInt(userID, 10)).Build()
 		r.client.Do(ctx, removeFromQueue)
 	}()
 
 	resp, err := r.matchMakingScript.Exec(ctx, r.client,
-		[]string{"matchmaking", "matchmaking"},
+		[]string{"matchmaking"},
 		[]string{fmt.Sprint(MaxLobbyMembers),
 			strconv.FormatInt(time.Now().Add(-time.Minute*2).Unix(), 10),
 			uuid.New().String(),
@@ -84,10 +83,6 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 		if len(result) < 2 {
 			return entity.Lobby{}, false, ErrTimeout
 		}
-		//logrus.WithFields(logrus.Fields{
-		//	"userID": userID,
-		//	"lobby":  result[1],
-		//}).Info("found a new lobby")
 		lobby, err := r.lobby.Get(ctx, entity.NewID("lobby", result[1]))
 		return lobby, false, err
 	}

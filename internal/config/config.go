@@ -9,8 +9,9 @@ type Config struct {
 var Default Config
 
 func init() {
-	Default = Config{
-		WebAppAddr: os.Getenv("WEBAPP_ADDR"),
+	cfg := Config{}
+	if os.Getenv("WEBAPP_ADDR") != "" {
+		cfg.WebAppAddr = os.Getenv("WEBAPP_ADDR")
 	}
-
+	Default = cfg
 }

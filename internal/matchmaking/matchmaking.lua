@@ -1,6 +1,5 @@
 -- KEYS
 local queueKey = KEYS[1]
-local pubSubChannel = KEYS[2]
 
 -- ARGV
 local minUsers = tonumber(ARGV[1])
@@ -36,7 +35,7 @@ if #matchedUsers >= neededUsers then
         participants = matchedUsers,
         created_at = tonumber(userScore), -- Store as a number in the JSON document
         state = 'created',
-        resigned = {}
+        resigned = cjson.empty_array
     }
     local lobbyJson = cjson.encode(lobby)
     -- 6. Save Lobby to RedisJSON (Note: Requires the RedisJSON module installed on your server)

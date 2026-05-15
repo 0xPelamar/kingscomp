@@ -149,14 +149,14 @@ func (s *MatchmakingTestSuite) TestMatchmaking_JoinWithManyLobbies() {
 	}
 
 	st := time.Now()
-	for i := 0; i < maxLobbySize*1000; i++ {
+	for i := 0; i < maxLobbySize*10000; i++ {
 		testJoin(int64(i) + 1)
 	}
 
 	wg.Wait()
 	fmt.Println("Took", time.Since(st))
 
-	assert.Len(s.T(), counter.counter, 1000)
+	assert.Len(s.T(), counter.counter, 10000)
 
 	// Each user must have joined one lobby
 	for lobbyID, count := range counter.counter {

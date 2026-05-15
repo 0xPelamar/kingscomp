@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/0xpelamar/kingscomp/internal/telegram/teleprompt"
+	"github.com/samber/lo"
 	"gopkg.in/telebot.v4"
 )
 
@@ -78,18 +79,14 @@ func generateKeyboard(rows [][]string) *telebot.ReplyMarkup {
 	mu := &telebot.ReplyMarkup{
 		ResizeKeyboard:  true,
 		OneTimeKeyboard: true,
+		RemoveKeyboard:  true,
+		ForceReply:      true,
 	}
-	telRows := make([]telebot.Row, 0, len(rows))
-	for _, row := range rows {
-		telBtns := make([]telebot.Btn, 0, len(row))
-		for _, btn := range row {
-			telBtn := telebot.Btn{
-				Text: btn,
-			}
-			telBtns = append(telBtns, telBtn)
-		}
-		telRows = append(telRows, telBtns)
-	}
-	mu.Reply(telRows...)
+
+	mu.Reply(lo.Map(rows, func(row []string, _ int) telebot.Row {
+		return mu.Row(lo.Map(row, func(btn string, _ int) telebot.Btn {
+			return telebot.Btn{Text: btn}
+		})...)
+	})...)
 	return mu
 }
