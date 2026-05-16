@@ -51,5 +51,19 @@ func (q QuestionRedisRepository) GetActiveQuestions(ctx context.Context, indexes
 }
 
 func (q QuestionRedisRepository) PushActiveQuestion(ctx context.Context, questions ...entity.Question) error {
-	panic("implement me")
+	if err := q.Mset(ctx, questions...); err != nil {
+		return err
+	}
+
+	IDs := lo.Map(questions, func(item entity.Question, _ int) string {
+		return item.ID
+	})
+
+	cmd := q.client.B().Rpush().Key("active_questions").Element(IDs...).Build()
+	if err := q.client.Do(ctx, cmd).Error(); err != nil {
+		logrus.WithError(err).Errorln("could not push active questions")
+		return err
+	}
+	return nil
+
 }
