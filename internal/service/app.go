@@ -20,12 +20,12 @@ func NewApp(account *AccountService, lobby *LobbyService) *App {
 }
 
 func (a *App) LobbyPlayers(ctx context.Context, lobbyID string) (entity.Lobby, []entity.Account, error) {
-	lobby, err := a.Lobby.Lobby.Get(ctx, entity.NewID("lobby", lobbyID))
+	lobby, err := a.Lobby.Get(ctx, entity.NewID("lobby", lobbyID))
 	if err != nil {
 		return entity.Lobby{}, nil, err
 	}
 
-	accounts, err := a.Account.Account.Mget(ctx, lo.Map(lobby.Participants, func(item int64, _ int) entity.ID {
+	accounts, err := a.Account.Mget(ctx, lo.Map(lobby.Participants, func(item int64, _ int) entity.ID {
 		return entity.NewID("account", item)
 	})...)
 	if err != nil {

@@ -30,8 +30,8 @@ type MatchmakingTestSuite struct {
 	timeout     time.Duration
 	redisClient rueidis.Client
 
-	lobby   repository.LobbyRepository
-	account repository.AccountRepository
+	lobby   repository.Lobby
+	account repository.Account
 }
 
 func (s *MatchmakingTestSuite) SetupSuite() {

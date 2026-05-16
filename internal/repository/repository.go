@@ -15,11 +15,15 @@ type CommonBehaviour[T entity.Entity] interface {
 	Mget(ctx context.Context, IDs ...entity.ID) ([]T, error)
 }
 
-type AccountRepository interface {
+type Account interface {
 	CommonBehaviour[entity.Account]
 }
 
-type LobbyRepository interface {
+type Lobby interface {
 	CommonBehaviour[entity.Lobby]
 	LobbyPlayers(ctx context.Context, LobbyID entity.ID) ([]entity.Account, error)
+}
+
+type Question interface {
+	CommonBehaviour[entity.Question]
 }

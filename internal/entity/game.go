@@ -11,3 +11,14 @@ type Lobby struct {
 func (l Lobby) EntityID() ID {
 	return NewID("lobby", l.ID)
 }
+
+type Question struct {
+	ID            string   `json:"id"`
+	Question      string   `json:"question"`
+	Answers       []string `json:"answers"`
+	CorrectAnswer int      `json:"correct_answer"`
+}
+
+func (q Question) EntityID() ID {
+	return NewID("question", q.ID)
+}

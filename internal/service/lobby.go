@@ -3,11 +3,11 @@ package service
 import "github.com/0xpelamar/kingscomp/internal/repository"
 
 type LobbyService struct {
-	Lobby repository.LobbyRepository
+	repository.Lobby
 }
 
-func NewLobbyService(lobby repository.LobbyRepository) *LobbyService {
+func NewLobbyService(rep repository.Lobby) *LobbyService {
 	return &LobbyService{
-		Lobby: lobby,
+		Lobby: rep,
 	}
 }

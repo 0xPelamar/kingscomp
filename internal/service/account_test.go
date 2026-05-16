@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccountService_CreateOrUpdateWithUserExists(t *testing.T) {
-	accRep := repository.NewMockAccountRepository(t)
+	accRep := repository.NewMockAccount(t)
 	s := NewAccountService(accRep)
 	ctx := context.Background()
 	accRep.On("Get", mock.Anything, entity.NewID("account", 11)).
@@ -33,7 +33,7 @@ func TestAccountService_CreateOrUpdateWithUserExists(t *testing.T) {
 }
 
 func TestAccountService_CreateOrUpdateWithUserNotExists(t *testing.T) {
-	accRep := repository.NewMockAccountRepository(t)
+	accRep := repository.NewMockAccount(t)
 	s := NewAccountService(accRep)
 	ctx := context.Background()
 	accRep.On("Get", mock.Anything, entity.NewID("account", 11)).
@@ -55,7 +55,7 @@ func TestAccountService_CreateOrUpdateWithUserNotExists(t *testing.T) {
 }
 
 func TestAccountService_CreateOrUpdateUserHasNotChanged(t *testing.T) {
-	accRep := repository.NewMockAccountRepository(t)
+	accRep := repository.NewMockAccount(t)
 	s := NewAccountService(accRep)
 	ctx := context.Background()
 	accRep.On("Get", mock.Anything, entity.NewID("account", 11)).

@@ -7,7 +7,7 @@ import (
 	"github.com/redis/rueidis"
 )
 
-var _ LobbyRepository = &LobbyRedisRepository{}
+var _ Lobby = &LobbyRedisRepository{}
 
 type LobbyRedisRepository struct {
 	*RedisCommonBehaviour[entity.Lobby]

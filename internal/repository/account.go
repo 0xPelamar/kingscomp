@@ -5,7 +5,7 @@ import (
 	"github.com/redis/rueidis"
 )
 
-var _ AccountRepository = &AccountRedisRepository{}
+var _ Account = &AccountRedisRepository{}
 
 type AccountRedisRepository struct {
 	*RedisCommonBehaviour[entity.Account]
