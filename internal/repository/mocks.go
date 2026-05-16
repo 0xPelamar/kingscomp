@@ -183,6 +183,72 @@ func (_c *MockCommonBehaviour_Mget_Call[T]) RunAndReturn(run func(ctx context.Co
 	return _c
 }
 
+// Mset provides a mock function for the type MockCommonBehaviour
+func (_mock *MockCommonBehaviour[T]) Mset(ctx context.Context, entities ...T) error {
+	var tmpRet mock.Arguments
+	if len(entities) > 0 {
+		tmpRet = _mock.Called(ctx, entities)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for Mset")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...T) error); ok {
+		r0 = returnFunc(ctx, entities...)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockCommonBehaviour_Mset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Mset'
+type MockCommonBehaviour_Mset_Call[T entity.Entity] struct {
+	*mock.Call
+}
+
+// Mset is a helper method to define mock.On call
+//   - ctx context.Context
+//   - entities ...T
+func (_e *MockCommonBehaviour_Expecter[T]) Mset(ctx interface{}, entities ...interface{}) *MockCommonBehaviour_Mset_Call[T] {
+	return &MockCommonBehaviour_Mset_Call[T]{Call: _e.mock.On("Mset",
+		append([]interface{}{ctx}, entities...)...)}
+}
+
+func (_c *MockCommonBehaviour_Mset_Call[T]) Run(run func(ctx context.Context, entities ...T)) *MockCommonBehaviour_Mset_Call[T] {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []T
+		var variadicArgs []T
+		if len(args) > 1 {
+			variadicArgs = args[1].([]T)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockCommonBehaviour_Mset_Call[T]) Return(err error) *MockCommonBehaviour_Mset_Call[T] {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockCommonBehaviour_Mset_Call[T]) RunAndReturn(run func(ctx context.Context, entities ...T) error) *MockCommonBehaviour_Mset_Call[T] {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Save provides a mock function for the type MockCommonBehaviour
 func (_mock *MockCommonBehaviour[T]) Save(context1 context.Context, v T) error {
 	ret := _mock.Called(context1, v)
@@ -406,6 +472,72 @@ func (_c *MockAccount_Mget_Call) Return(accounts []entity.Account, err error) *M
 }
 
 func (_c *MockAccount_Mget_Call) RunAndReturn(run func(ctx context.Context, IDs ...entity.ID) ([]entity.Account, error)) *MockAccount_Mget_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Mset provides a mock function for the type MockAccount
+func (_mock *MockAccount) Mset(ctx context.Context, entities ...entity.Account) error {
+	var tmpRet mock.Arguments
+	if len(entities) > 0 {
+		tmpRet = _mock.Called(ctx, entities)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for Mset")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.Account) error); ok {
+		r0 = returnFunc(ctx, entities...)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockAccount_Mset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Mset'
+type MockAccount_Mset_Call struct {
+	*mock.Call
+}
+
+// Mset is a helper method to define mock.On call
+//   - ctx context.Context
+//   - entities ...entity.Account
+func (_e *MockAccount_Expecter) Mset(ctx interface{}, entities ...interface{}) *MockAccount_Mset_Call {
+	return &MockAccount_Mset_Call{Call: _e.mock.On("Mset",
+		append([]interface{}{ctx}, entities...)...)}
+}
+
+func (_c *MockAccount_Mset_Call) Run(run func(ctx context.Context, entities ...entity.Account)) *MockAccount_Mset_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []entity.Account
+		var variadicArgs []entity.Account
+		if len(args) > 1 {
+			variadicArgs = args[1].([]entity.Account)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockAccount_Mset_Call) Return(err error) *MockAccount_Mset_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockAccount_Mset_Call) RunAndReturn(run func(ctx context.Context, entities ...entity.Account) error) *MockAccount_Mset_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -705,6 +837,72 @@ func (_c *MockLobby_Mget_Call) RunAndReturn(run func(ctx context.Context, IDs ..
 	return _c
 }
 
+// Mset provides a mock function for the type MockLobby
+func (_mock *MockLobby) Mset(ctx context.Context, entities ...entity.Lobby) error {
+	var tmpRet mock.Arguments
+	if len(entities) > 0 {
+		tmpRet = _mock.Called(ctx, entities)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for Mset")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.Lobby) error); ok {
+		r0 = returnFunc(ctx, entities...)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockLobby_Mset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Mset'
+type MockLobby_Mset_Call struct {
+	*mock.Call
+}
+
+// Mset is a helper method to define mock.On call
+//   - ctx context.Context
+//   - entities ...entity.Lobby
+func (_e *MockLobby_Expecter) Mset(ctx interface{}, entities ...interface{}) *MockLobby_Mset_Call {
+	return &MockLobby_Mset_Call{Call: _e.mock.On("Mset",
+		append([]interface{}{ctx}, entities...)...)}
+}
+
+func (_c *MockLobby_Mset_Call) Run(run func(ctx context.Context, entities ...entity.Lobby)) *MockLobby_Mset_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []entity.Lobby
+		var variadicArgs []entity.Lobby
+		if len(args) > 1 {
+			variadicArgs = args[1].([]entity.Lobby)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockLobby_Mset_Call) Return(err error) *MockLobby_Mset_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockLobby_Mset_Call) RunAndReturn(run func(ctx context.Context, entities ...entity.Lobby) error) *MockLobby_Mset_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Save provides a mock function for the type MockLobby
 func (_mock *MockLobby) Save(context1 context.Context, lobby entity.Lobby) error {
 	ret := _mock.Called(context1, lobby)
@@ -855,6 +1053,143 @@ func (_c *MockQuestion_Get_Call) RunAndReturn(run func(context1 context.Context,
 	return _c
 }
 
+// GetActiveQuestions provides a mock function for the type MockQuestion
+func (_mock *MockQuestion) GetActiveQuestions(ctx context.Context, index ...int64) ([]entity.Question, error) {
+	var tmpRet mock.Arguments
+	if len(index) > 0 {
+		tmpRet = _mock.Called(ctx, index)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetActiveQuestions")
+	}
+
+	var r0 []entity.Question
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...int64) ([]entity.Question, error)); ok {
+		return returnFunc(ctx, index...)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...int64) []entity.Question); ok {
+		r0 = returnFunc(ctx, index...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]entity.Question)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, ...int64) error); ok {
+		r1 = returnFunc(ctx, index...)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuestion_GetActiveQuestions_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetActiveQuestions'
+type MockQuestion_GetActiveQuestions_Call struct {
+	*mock.Call
+}
+
+// GetActiveQuestions is a helper method to define mock.On call
+//   - ctx context.Context
+//   - index ...int64
+func (_e *MockQuestion_Expecter) GetActiveQuestions(ctx interface{}, index ...interface{}) *MockQuestion_GetActiveQuestions_Call {
+	return &MockQuestion_GetActiveQuestions_Call{Call: _e.mock.On("GetActiveQuestions",
+		append([]interface{}{ctx}, index...)...)}
+}
+
+func (_c *MockQuestion_GetActiveQuestions_Call) Run(run func(ctx context.Context, index ...int64)) *MockQuestion_GetActiveQuestions_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []int64
+		var variadicArgs []int64
+		if len(args) > 1 {
+			variadicArgs = args[1].([]int64)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuestion_GetActiveQuestions_Call) Return(questions []entity.Question, err error) *MockQuestion_GetActiveQuestions_Call {
+	_c.Call.Return(questions, err)
+	return _c
+}
+
+func (_c *MockQuestion_GetActiveQuestions_Call) RunAndReturn(run func(ctx context.Context, index ...int64) ([]entity.Question, error)) *MockQuestion_GetActiveQuestions_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetActiveQuestionsCount provides a mock function for the type MockQuestion
+func (_mock *MockQuestion) GetActiveQuestionsCount(ctx context.Context) (int64, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetActiveQuestionsCount")
+	}
+
+	var r0 int64
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) (int64, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) int64); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuestion_GetActiveQuestionsCount_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetActiveQuestionsCount'
+type MockQuestion_GetActiveQuestionsCount_Call struct {
+	*mock.Call
+}
+
+// GetActiveQuestionsCount is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuestion_Expecter) GetActiveQuestionsCount(ctx interface{}) *MockQuestion_GetActiveQuestionsCount_Call {
+	return &MockQuestion_GetActiveQuestionsCount_Call{Call: _e.mock.On("GetActiveQuestionsCount", ctx)}
+}
+
+func (_c *MockQuestion_GetActiveQuestionsCount_Call) Run(run func(ctx context.Context)) *MockQuestion_GetActiveQuestionsCount_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuestion_GetActiveQuestionsCount_Call) Return(n int64, err error) *MockQuestion_GetActiveQuestionsCount_Call {
+	_c.Call.Return(n, err)
+	return _c
+}
+
+func (_c *MockQuestion_GetActiveQuestionsCount_Call) RunAndReturn(run func(ctx context.Context) (int64, error)) *MockQuestion_GetActiveQuestionsCount_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Mget provides a mock function for the type MockQuestion
 func (_mock *MockQuestion) Mget(ctx context.Context, IDs ...entity.ID) ([]entity.Question, error) {
 	var tmpRet mock.Arguments
@@ -928,6 +1263,138 @@ func (_c *MockQuestion_Mget_Call) Return(questions []entity.Question, err error)
 }
 
 func (_c *MockQuestion_Mget_Call) RunAndReturn(run func(ctx context.Context, IDs ...entity.ID) ([]entity.Question, error)) *MockQuestion_Mget_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Mset provides a mock function for the type MockQuestion
+func (_mock *MockQuestion) Mset(ctx context.Context, entities ...entity.Question) error {
+	var tmpRet mock.Arguments
+	if len(entities) > 0 {
+		tmpRet = _mock.Called(ctx, entities)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for Mset")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.Question) error); ok {
+		r0 = returnFunc(ctx, entities...)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuestion_Mset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Mset'
+type MockQuestion_Mset_Call struct {
+	*mock.Call
+}
+
+// Mset is a helper method to define mock.On call
+//   - ctx context.Context
+//   - entities ...entity.Question
+func (_e *MockQuestion_Expecter) Mset(ctx interface{}, entities ...interface{}) *MockQuestion_Mset_Call {
+	return &MockQuestion_Mset_Call{Call: _e.mock.On("Mset",
+		append([]interface{}{ctx}, entities...)...)}
+}
+
+func (_c *MockQuestion_Mset_Call) Run(run func(ctx context.Context, entities ...entity.Question)) *MockQuestion_Mset_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []entity.Question
+		var variadicArgs []entity.Question
+		if len(args) > 1 {
+			variadicArgs = args[1].([]entity.Question)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuestion_Mset_Call) Return(err error) *MockQuestion_Mset_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuestion_Mset_Call) RunAndReturn(run func(ctx context.Context, entities ...entity.Question) error) *MockQuestion_Mset_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// PushActiveQuestion provides a mock function for the type MockQuestion
+func (_mock *MockQuestion) PushActiveQuestion(ctx context.Context, questions ...entity.Question) error {
+	var tmpRet mock.Arguments
+	if len(questions) > 0 {
+		tmpRet = _mock.Called(ctx, questions)
+	} else {
+		tmpRet = _mock.Called(ctx)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for PushActiveQuestion")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, ...entity.Question) error); ok {
+		r0 = returnFunc(ctx, questions...)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuestion_PushActiveQuestion_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PushActiveQuestion'
+type MockQuestion_PushActiveQuestion_Call struct {
+	*mock.Call
+}
+
+// PushActiveQuestion is a helper method to define mock.On call
+//   - ctx context.Context
+//   - questions ...entity.Question
+func (_e *MockQuestion_Expecter) PushActiveQuestion(ctx interface{}, questions ...interface{}) *MockQuestion_PushActiveQuestion_Call {
+	return &MockQuestion_PushActiveQuestion_Call{Call: _e.mock.On("PushActiveQuestion",
+		append([]interface{}{ctx}, questions...)...)}
+}
+
+func (_c *MockQuestion_PushActiveQuestion_Call) Run(run func(ctx context.Context, questions ...entity.Question)) *MockQuestion_PushActiveQuestion_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []entity.Question
+		var variadicArgs []entity.Question
+		if len(args) > 1 {
+			variadicArgs = args[1].([]entity.Question)
+		}
+		arg1 = variadicArgs
+		run(
+			arg0,
+			arg1...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuestion_PushActiveQuestion_Call) Return(err error) *MockQuestion_PushActiveQuestion_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuestion_PushActiveQuestion_Call) RunAndReturn(run func(ctx context.Context, questions ...entity.Question) error) *MockQuestion_PushActiveQuestion_Call {
 	_c.Call.Return(run)
 	return _c
 }

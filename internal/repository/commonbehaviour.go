@@ -17,6 +17,12 @@ type RedisCommonBehaviour[T entity.Entity] struct {
 	client rueidis.Client
 }
 
+func NewRedisCommonBehaviour[T entity.Entity](client rueidis.Client) *RedisCommonBehaviour[T] {
+	return &RedisCommonBehaviour[T]{
+		client: client,
+	}
+}
+
 func (r RedisCommonBehaviour[T]) Get(ctx context.Context, id entity.ID) (T, error) {
 	var t T
 	cmd := r.client.B().JsonGet().Key(id.String()).Path(".").Build()
@@ -60,8 +66,24 @@ func (r RedisCommonBehaviour[T]) Mget(ctx context.Context, IDs ...entity.ID) ([]
 	}), nil
 }
 
-func NewRedisCommonBehaviour[T entity.Entity](client rueidis.Client) *RedisCommonBehaviour[T] {
-	return &RedisCommonBehaviour[T]{
-		client: client,
+func (r RedisCommonBehaviour[T]) Mset(ctx context.Context, entities ...T) error {
+	if len(entities) == 0 {
+		return nil
 	}
+	var cmd = r.client.B().JsonMset().Key(entities[0].EntityID().String()).Path(".").
+		Value(string(jsonhelper.Encode(entities[0])))
+
+	for i, ent := range entities {
+		if i == 0 {
+			continue
+		}
+		cmd = cmd.Key(ent.EntityID().String()).Path(".").Value(string(jsonhelper.Encode(ent)))
+	}
+
+	err := r.client.Do(ctx, cmd.Build()).Error()
+	if err != nil {
+		logrus.WithError(err).Errorln("could not save multi items")
+		return err
+	}
+	return nil
 }

@@ -116,3 +116,23 @@ func (s *CommonBehaviourTestSuite) TestRedisCommonBehaviour_MgetNotExists() {
 	assert.NoError(s.T(), err)
 	assert.Len(s.T(), items, 0)
 }
+
+func (s *CommonBehaviourTestSuite) TestRedisCommonBehaviour_Mset() {
+	err := s.rcb.Mset(s.ctx,
+		TestType{ID: "2", Name: "name2"},
+		TestType{ID: "3", Name: "name3"},
+		TestType{ID: "4", Name: "name4"},
+		TestType{ID: "5", Name: "name5"},
+	)
+	assert.NoError(s.T(), err)
+
+	entities, err := s.rcb.Mget(s.ctx,
+		entity.NewID("testType", 2),
+		entity.NewID("testType", 3),
+		entity.NewID("testType", 4),
+		entity.NewID("testType", 5))
+	assert.NoError(s.T(), err)
+	assert.Len(s.T(), entities, 4)
+	assert.Equal(s.T(), "2", entities[0].ID)
+	assert.Equal(s.T(), "name2", entities[0].Name)
+}

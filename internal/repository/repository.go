@@ -13,6 +13,7 @@ type CommonBehaviour[T entity.Entity] interface {
 	Get(context.Context, entity.ID) (T, error)
 	Save(context.Context, T) error
 	Mget(ctx context.Context, IDs ...entity.ID) ([]T, error)
+	Mset(ctx context.Context, entities ...T) error
 }
 
 type Account interface {
@@ -26,4 +27,7 @@ type Lobby interface {
 
 type Question interface {
 	CommonBehaviour[entity.Question]
+	GetActiveQuestionsCount(ctx context.Context) (int64, error)
+	GetActiveQuestions(ctx context.Context, index ...int64) ([]entity.Question, error)
+	PushActiveQuestion(ctx context.Context, questions ...entity.Question) error
 }
