@@ -39,7 +39,7 @@ type CommonBehaviourTestSuite struct {
 func (cbts *CommonBehaviourTestSuite) SetupSuite() {
 	cbts.ctx = context.Background()
 	pool := dockertest.NewPoolT(cbts.T(), "")
-	redisResource := pool.RunT(cbts.T(), "redis", dockertest.WithTag("8.4-alpine"))
+	redisResource := pool.RunT(cbts.T(), "redis/redis-stack-server", dockertest.WithTag("7.4.0-v8"))
 
 	redisPort := redisResource.GetPort("6379/tcp")
 
@@ -90,7 +90,7 @@ func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_Mget() {
 		assert.NoError(cbts.T(), err)
 	}
 
-	items, err := cbts.rcb.Mget(cbts.ctx,
+	items, err := cbts.rcb.MGet(cbts.ctx,
 		entity.NewID("testType", 2),
 		entity.NewID("testType", 3),
 		entity.NewID("testType", 4),
@@ -104,7 +104,7 @@ func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_Mget() {
 func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_MgetNotExists() {
 	var err error
 
-	items, err := cbts.rcb.Mget(cbts.ctx,
+	items, err := cbts.rcb.MGet(cbts.ctx,
 		entity.NewID("testType", 2),
 		entity.NewID("testType", 3),
 		entity.NewID("testType", 4),
@@ -115,7 +115,7 @@ func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_MgetNotExists() {
 }
 
 func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_Mset() {
-	err := cbts.rcb.Mset(cbts.ctx,
+	err := cbts.rcb.MSet(cbts.ctx,
 		TestType{ID: "2", Name: "name2"},
 		TestType{ID: "3", Name: "name3"},
 		TestType{ID: "4", Name: "name4"},
@@ -123,7 +123,7 @@ func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_Mset() {
 	)
 	assert.NoError(cbts.T(), err)
 
-	entities, err := cbts.rcb.Mget(cbts.ctx,
+	entities, err := cbts.rcb.MGet(cbts.ctx,
 		entity.NewID("testType", 2),
 		entity.NewID("testType", 3),
 		entity.NewID("testType", 4),

@@ -19,7 +19,7 @@ func (w *WebApp) urls() {
 	lobby.GET("/:lobby_id", w.lobbyIndex)
 
 	auth := w.e.Group("/auth")
-	auth.POST("/validate", w.validateInitdata, w.authorize)
+	auth.POST("/validate", w.validateInitData, w.authorize)
 }
 
 func (w *WebApp) authorize(next echo.HandlerFunc) echo.HandlerFunc {

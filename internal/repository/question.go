@@ -46,12 +46,12 @@ func (q QuestionRedisRepository) GetActiveQuestions(ctx context.Context, indexes
 		s, _ := item.ToString()
 		return entity.NewID("question", s)
 	})
-	return q.Mget(ctx, questionIDs...)
+	return q.MGet(ctx, questionIDs...)
 
 }
 
 func (q QuestionRedisRepository) PushActiveQuestion(ctx context.Context, questions ...entity.Question) error {
-	if err := q.Mset(ctx, questions...); err != nil {
+	if err := q.MSet(ctx, questions...); err != nil {
 		return err
 	}
 

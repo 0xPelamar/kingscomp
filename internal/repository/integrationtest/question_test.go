@@ -29,7 +29,7 @@ type QuestionTestSuite struct {
 func (qts *QuestionTestSuite) SetupSuite() {
 	qts.ctx = context.Background()
 	pool := dockertest.NewPoolT(qts.T(), "")
-	redisResource := pool.RunT(qts.T(), "redis", dockertest.WithTag("8.4-alpine"))
+	redisResource := pool.RunT(qts.T(), "redis/redis-stack-server", dockertest.WithTag("7.4.0-v8"))
 
 	redisPort := redisResource.GetPort("6379/tcp")
 

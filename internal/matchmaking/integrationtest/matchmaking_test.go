@@ -37,7 +37,7 @@ type MatchmakingTestSuite struct {
 func (s *MatchmakingTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	pool := dockertest.NewPoolT(s.T(), "")
-	redisResource := pool.RunT(s.T(), "redis", dockertest.WithTag("8.4-alpine"))
+	redisResource := pool.RunT(s.T(), "redis/redis-stack-server", dockertest.WithTag("7.4.0-v8"))
 
 	redisPort := redisResource.GetPort("6379/tcp")
 

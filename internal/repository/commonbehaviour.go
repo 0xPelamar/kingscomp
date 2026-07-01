@@ -46,7 +46,7 @@ func (r RedisCommonBehaviour[T]) Save(ctx context.Context, t T) error {
 	return nil
 }
 
-func (r RedisCommonBehaviour[T]) Mget(ctx context.Context, IDs ...entity.ID) ([]T, error) {
+func (r RedisCommonBehaviour[T]) MGet(ctx context.Context, IDs ...entity.ID) ([]T, error) {
 	keys := lo.Map(IDs, func(ID entity.ID, _ int) string {
 		return ID.String()
 	})
@@ -66,7 +66,7 @@ func (r RedisCommonBehaviour[T]) Mget(ctx context.Context, IDs ...entity.ID) ([]
 	}), nil
 }
 
-func (r RedisCommonBehaviour[T]) Mset(ctx context.Context, entities ...T) error {
+func (r RedisCommonBehaviour[T]) MSet(ctx context.Context, entities ...T) error {
 	if len(entities) == 0 {
 		return nil
 	}

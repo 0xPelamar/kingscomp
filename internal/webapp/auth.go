@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (w *WebApp) validateInitdata(c echo.Context) error {
+func (w *WebApp) validateInitData(c echo.Context) error {
 	acc := c.Get("account").(entity.Account)
 
 	return c.JSON(http.StatusOK, ResponseOK(200, J{

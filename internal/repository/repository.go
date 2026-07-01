@@ -12,8 +12,8 @@ var ErrNotFound = errors.New("entity not found")
 type CommonBehaviour[T entity.Entity] interface {
 	Get(context.Context, entity.ID) (T, error)
 	Save(context.Context, T) error
-	Mget(ctx context.Context, IDs ...entity.ID) ([]T, error)
-	Mset(ctx context.Context, entities ...T) error
+	MGet(ctx context.Context, IDs ...entity.ID) ([]T, error)
+	MSet(ctx context.Context, entities ...T) error
 }
 
 type Account interface {
