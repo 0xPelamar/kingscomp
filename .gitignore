@@ -1,4 +1,4 @@
 .env
 .idea/
 output.txt
-/questions.json
+questions.json
