@@ -29,25 +29,25 @@ if #matchedUsers >= neededUsers then
     -- 4. Add the current user (who triggered the match) to our matched group
     table.insert(matchedUsers, userID)
 
-    -- 5. Create the Lobby JSON object
-    local lobby = {
-        id = lobbyID,
-        participants = matchedUsers,
-        created_at = tonumber(userScore), -- Store as a number in the JSON document
-        state = 'created',
-        resigned = cjson.empty_array
-    }
-    local lobbyJson = cjson.encode(lobby)
-    -- 6. Save Lobby to RedisJSON (Note: Requires the RedisJSON module installed on your server)
-    redis.call('JSON.SET', 'lobby:' .. lobbyID, '.', lobbyJson)
-
-    for i, v in ipairs(matchedUsers) do
-        if v ~= userID then
-            local listKey = 'matchmaking:' .. v
-            redis.call('RPUSH', listKey, lobbyID)
-            redis.call('EXPIRE', listKey, 120)
-        end
-    end
+--     -- 5. Create the Lobby JSON object
+--     local lobby = {
+--         id = lobbyID,
+--         participants = matchedUsers,
+--         created_at = tonumber(userScore), -- Store as a number in the JSON document
+--         state = 'created',
+--         resigned = cjson.empty_array
+--     }
+--     local lobbyJson = cjson.encode(lobby)
+--     -- 6. Save Lobby to RedisJSON (Note: Requires the RedisJSON module installed on your server)
+--     redis.call('JSON.SET', 'lobby:' .. lobbyID, '.', lobbyJson)
+--
+--     for i, v in ipairs(matchedUsers) do
+--         if v ~= userID then
+--             local listKey = 'matchmaking:' .. v
+--             redis.call('RPUSH', listKey, lobbyID)
+--             redis.call('EXPIRE', listKey, 120)
+--         end
+--     end
 
     -- Return success, the lobby ID, and the player array
     return {true, lobbyID, matchedUsers}

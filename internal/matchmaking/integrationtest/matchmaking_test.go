@@ -17,8 +17,6 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-const maxLobbySize = 5
-
 func TestMatchmaking(t *testing.T) {
 	suite.Run(t, new(MatchmakingTestSuite))
 }
@@ -52,7 +50,16 @@ func (s *MatchmakingTestSuite) SetupSuite() {
 	s.redisClient = redisClient
 	ar := repository.NewAccountRedisRepository(redisClient)
 	lr := repository.NewLobbyRedisRepository(redisClient)
-	mm := matchmaking.NewRedisMatchMaking(redisClient, lr)
+	qr := repository.NewQuestionRedisRepository(redisClient)
+	mm := matchmaking.NewRedisMatchMaking(redisClient, lr, qr)
+	err = qr.PushActiveQuestion(s.ctx,
+		entity.Question{ID: "1"},
+		entity.Question{ID: "2"},
+		entity.Question{ID: "3"},
+		entity.Question{ID: "4"},
+		entity.Question{ID: "5"},
+	)
+	assert.NoError(s.T(), err)
 
 	for i := 0; i < 100; i++ {
 		err := ar.Save(context.Background(), entity.Account{
@@ -79,18 +86,18 @@ func (s *MatchmakingTestSuite) TestMatchMaking_Join() {
 	testJoin := func(id int64) {
 		wg.Add(1)
 		go func() {
-			lobby, _, err := s.mm.Join(s.ctx, id, time.Second)
+			lobby, _, err := s.mm.Join(s.ctx, id, s.timeout)
 			assert.NoError(s.T(), err)
 			assert.NotEqual(s.T(), "", lobby.ID)
 			wg.Done()
 		}()
 	}
-	for i := 0; i < maxLobbySize-1; i++ {
+	for i := 0; i < matchmaking.MaxLobbyMembers-1; i++ {
 		testJoin(int64(3 + i))
 	}
 	<-time.After(time.Millisecond * 500)
 
-	assert.Equal(s.T(), int64(maxLobbySize-1), zCount(s.T(), s.redisClient, "matchmaking"))
+	assert.Equal(s.T(), int64(matchmaking.MaxLobbyMembers-1), zCount(s.T(), s.redisClient, "matchmaking"))
 
 	lobby, _, err := s.mm.Join(s.ctx, 14, s.timeout)
 	assert.NoError(s.T(), err)
@@ -104,7 +111,7 @@ func (s *MatchmakingTestSuite) TestMatchmaking_JoinTimeout() {
 	testJoin := func(id int64) {
 		wg.Add(1)
 		go func() {
-			lobby, _, err := s.mm.Join(s.ctx, id, time.Millisecond*100)
+			lobby, _, err := s.mm.Join(s.ctx, id, 10*time.Millisecond)
 			assert.ErrorIs(s.T(), err, matchmaking.ErrTimeout)
 			assert.Equal(s.T(), "", lobby.ID)
 			wg.Done()
@@ -149,7 +156,7 @@ func (s *MatchmakingTestSuite) TestMatchmaking_JoinWithManyLobbies() {
 	}
 
 	st := time.Now()
-	for i := 0; i < maxLobbySize*10000; i++ {
+	for i := 0; i < matchmaking.MaxLobbyMembers*10000; i++ {
 		testJoin(int64(i) + 1)
 	}
 
@@ -162,8 +169,8 @@ func (s *MatchmakingTestSuite) TestMatchmaking_JoinWithManyLobbies() {
 	for lobbyID, count := range counter.counter {
 		lobby, err := s.lobby.Get(context.Background(), entity.NewID("lobby", lobbyID))
 		assert.NoError(s.T(), err)
-		assert.Len(s.T(), lobby.Participants, maxLobbySize)
-		assert.Equal(s.T(), count, maxLobbySize)
+		assert.Len(s.T(), lobby.Participants, matchmaking.MaxLobbyMembers)
+		assert.Equal(s.T(), count, matchmaking.MaxLobbyMembers)
 		for _, participant := range lobby.Participants {
 			uCounter.Increment(participant)
 		}
@@ -177,7 +184,6 @@ func (s *MatchmakingTestSuite) TestMatchmaking_JoinWithManyLobbies() {
 	assert.NoError(s.T(), err)
 	assert.NotEqual(s.T(), "", acc.CurrentLobby)
 }
-
 func zCount(t *testing.T, redisClient rueidis.Client, key string) int64 {
 	count, err := redisClient.Do(context.Background(), redisClient.B().Zcount().Key(key).Min("-inf").Max("+inf").Build()).ToInt64()
 	assert.NoError(t, err)

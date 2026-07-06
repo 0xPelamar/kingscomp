@@ -35,6 +35,7 @@ func serve(cmd *cobra.Command, args []string) {
 	logrus.Infoln("Connected to redis successfully.")
 	accountRepository := repository.NewAccountRedisRepository(redisClient)
 	lobbyRepository := repository.NewLobbyRedisRepository(redisClient)
+	questionRepository := repository.NewQuestionRedisRepository(redisClient)
 
 	// setup app
 	app := service.NewApp(
@@ -42,7 +43,7 @@ func serve(cmd *cobra.Command, args []string) {
 		service.NewLobbyService(lobbyRepository),
 	)
 
-	mm := matchmaking.NewRedisMatchMaking(redisClient, lobbyRepository)
+	mm := matchmaking.NewRedisMatchMaking(redisClient, lobbyRepository, questionRepository)
 	tel, err := telegram.NewTelegram(app, mm, os.Getenv("BOT_TOKEN"))
 	if err != nil {
 		logrus.WithError(err).Fatalln("could not create telegram bot")

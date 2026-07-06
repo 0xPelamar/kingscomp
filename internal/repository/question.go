@@ -31,12 +31,7 @@ func (q QuestionRedisRepository) GetActiveQuestions(ctx context.Context, indexes
 		return q.client.B().Lindex().Key("active_questions").Index(id).Build()
 	})
 	resp := q.client.DoMulti(ctx, cmds...)
-	err := lo.Reduce(resp, func(agg error, item rueidis.RedisResult, _ int) error {
-		if agg != nil {
-			return agg
-		}
-		return item.Error()
-	}, nil)
+	err := ReduceRedisResponseError(resp, rueidis.Nil)
 	if err != nil {
 		logrus.WithError(err).Errorln("failed to load active questions")
 		return nil, err

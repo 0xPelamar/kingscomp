@@ -9,6 +9,8 @@ import (
 
 	"github.com/0xpelamar/kingscomp/internal/entity"
 	"github.com/0xpelamar/kingscomp/internal/repository"
+	"github.com/0xpelamar/kingscomp/pkg/jsonhelper"
+	"github.com/0xpelamar/kingscomp/pkg/randhelper"
 	"github.com/google/uuid"
 	"github.com/redis/rueidis"
 	"github.com/sirupsen/logrus"
@@ -20,8 +22,6 @@ var (
 	ErrBadRedisResponse = errors.New("bad redis response")
 	ErrTimeout          = errors.New("lobby queue timeout")
 )
-
-const MaxLobbyMembers = 5
 
 //go:embed matchmaking.lua
 var matchMakingScript string
@@ -38,14 +38,16 @@ type RedisMatchMaking struct {
 	matchMakingScript *rueidis.Lua
 	lobby             repository.Lobby
 	account           repository.Account
+	question          repository.Question
 }
 
-func NewRedisMatchMaking(client rueidis.Client, lobby repository.Lobby) *RedisMatchMaking {
+func NewRedisMatchMaking(client rueidis.Client, lobby repository.Lobby, question repository.Question) *RedisMatchMaking {
 	script := rueidis.NewLuaScript(matchMakingScript)
 	return &RedisMatchMaking{
 		client:            client,
 		matchMakingScript: script,
 		lobby:             lobby,
+		question:          question,
 	}
 }
 
@@ -90,13 +92,14 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 	// just created a lobby
 	if len(resp) == 3 {
 		lobbyID, _ := resp[1].ToString()
-		lobby, err := r.lobby.Get(ctx, entity.NewID("lobby", lobbyID))
+		matchedUsers, _ := resp[2].AsIntSlice()
 
-		cmds := make([]rueidis.Completed, 0, 5)
-		for _, participant := range lobby.Participants {
-			cmds = append(cmds, r.client.B().JsonSet().Key(entity.NewID("account", participant).String()).Path("$.current_lobby").Value(fmt.Sprintf(`"%s"`, lobbyID)).Build())
+		// create a new lobby
+		lobby, err := r.createNewLobby(ctx, lobbyID, matchedUsers)
+		if err != nil {
+			return entity.Lobby{}, false, err
 		}
-		_ = r.client.DoMulti(ctx, cmds...)
+
 		return lobby, true, err
 	}
 	logrus.WithError(err).Errorln("bad redis response")
@@ -106,4 +109,55 @@ func (r RedisMatchMaking) Join(ctx context.Context, userID int64, timeout time.D
 func (r RedisMatchMaking) Leave(ctx context.Context, userID int64) error {
 	//TODO implement me
 	panic("implement me")
+}
+
+func (r RedisMatchMaking) createNewLobby(ctx context.Context, lobbyID string, users []int64) (entity.Lobby, error) {
+	cmds := make([]rueidis.Completed, 0, 5)
+	// get lobby questions
+	activeQuestionsCount, err := r.question.GetActiveQuestionsCount(ctx)
+	if err != nil {
+		return entity.Lobby{}, err
+	}
+	questionIndexes := randhelper.GenerateDistinctNumbers(LobbyQuestionCount, 0, activeQuestionsCount)
+
+	questions, err := r.question.GetActiveQuestions(ctx, questionIndexes...)
+	if err != nil {
+		return entity.Lobby{}, err
+	}
+	// create the lobby
+	lobby := entity.Lobby{
+		ID:            lobbyID,
+		Participants:  users,
+		CreatedAtUnix: 0,
+		State:         "created",
+		Resigned:      make([]int64, 0),
+		Questions:     questions,
+	}
+
+	cmds = append(cmds,
+		r.client.B().JsonSet().
+			Key(entity.NewID("lobby", lobby.ID).String()).Path(".").
+			Value(string(jsonhelper.Encode(lobby))).Build(),
+	)
+
+	// update participants current lobby
+	for _, participant := range users {
+		userMatchmakingListKey := fmt.Sprintf("matchmaking:%d", participant)
+		cmds = append(cmds,
+			r.client.B().JsonSet().
+				Key(entity.NewID("account", participant).String()).
+				Path("$..current_lobby").
+				Value(fmt.Sprintf(`"%s"`, lobbyID)).Build(),
+			r.client.B().Rpush().Key(userMatchmakingListKey).
+				Element(lobbyID).Build(),
+			r.client.B().Expire().Key(userMatchmakingListKey).Seconds(120).Build(),
+		)
+	}
+	resp := r.client.DoMulti(ctx, cmds...)
+	err = repository.ReduceRedisResponseError(resp, rueidis.Nil)
+	if err != nil {
+		logrus.WithError(err).Errorln("could not create the matchmaking lobby")
+		return entity.Lobby{}, err
+	}
+	return lobby, nil
 }
