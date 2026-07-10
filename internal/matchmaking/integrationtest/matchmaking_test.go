@@ -179,7 +179,7 @@ func (s *MatchmakingTestSuite) TestMatchmaking_JoinWithManyLobbies() {
 		assert.Equal(s.T(), 1, count)
 	}
 
-	// check whether account's current game lobby is ready
+	// check whether account's current lobby lobby is ready
 	acc, err := s.account.Get(context.Background(), entity.NewID("account", 50))
 	assert.NoError(s.T(), err)
 	assert.NotEqual(s.T(), "", acc.CurrentLobby)

@@ -125,12 +125,16 @@ func (r RedisMatchMaking) createNewLobby(ctx context.Context, lobbyID string, us
 		return entity.Lobby{}, err
 	}
 	// create the lobby
+	userStates := make(map[int64]entity.UserState, len(users))
+	for _, user := range users {
+		userStates[user] = entity.UserState{}
+	}
 	lobby := entity.Lobby{
 		ID:            lobbyID,
 		Participants:  users,
 		CreatedAtUnix: 0,
 		State:         "created",
-		Resigned:      make([]int64, 0),
+		UserState:     userStates,
 		Questions:     questions,
 	}
 

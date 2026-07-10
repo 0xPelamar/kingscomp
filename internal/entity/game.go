@@ -1,12 +1,20 @@
 package entity
 
+type UserState struct {
+	IsReady    bool `json:"is_ready"`
+	IsResigned bool `json:"is_resigned"`
+
+	CurrentQuestionIndex    int  `json:"current_question_index"`
+	CurrentQuestionAnswered bool `json:"current_question_answered"`
+}
+
 type Lobby struct {
-	ID            string     `json:"id"`
-	Participants  []int64    `json:"participants"`
-	CreatedAtUnix int64      `json:"created_at"`
-	State         string     `json:"state"`
-	Resigned      []int64    `json:"resigned"`
-	Questions     []Question `json:"questions"`
+	ID            string              `json:"id"`
+	Participants  []int64             `json:"participants"`
+	CreatedAtUnix int64               `json:"created_at"`
+	State         string              `json:"state"`
+	UserState     map[int64]UserState `json:"user_state"`
+	Questions     []Question          `json:"questions"`
 }
 
 func (l Lobby) EntityID() ID {

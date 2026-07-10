@@ -22,7 +22,7 @@ type Account interface {
 
 type Lobby interface {
 	CommonBehaviour[entity.Lobby]
-	LobbyPlayers(ctx context.Context, LobbyID entity.ID) ([]entity.Account, error)
+	UpdateUserState(ctx context.Context, lobbyID string, userID int64, key string, val any) error
 }
 
 type Question interface {

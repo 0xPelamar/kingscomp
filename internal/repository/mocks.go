@@ -692,74 +692,6 @@ func (_c *MockLobby_Get_Call) RunAndReturn(run func(context1 context.Context, iD
 	return _c
 }
 
-// LobbyPlayers provides a mock function for the type MockLobby
-func (_mock *MockLobby) LobbyPlayers(ctx context.Context, LobbyID entity.ID) ([]entity.Account, error) {
-	ret := _mock.Called(ctx, LobbyID)
-
-	if len(ret) == 0 {
-		panic("no return value specified for LobbyPlayers")
-	}
-
-	var r0 []entity.Account
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, entity.ID) ([]entity.Account, error)); ok {
-		return returnFunc(ctx, LobbyID)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, entity.ID) []entity.Account); ok {
-		r0 = returnFunc(ctx, LobbyID)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]entity.Account)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, entity.ID) error); ok {
-		r1 = returnFunc(ctx, LobbyID)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockLobby_LobbyPlayers_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LobbyPlayers'
-type MockLobby_LobbyPlayers_Call struct {
-	*mock.Call
-}
-
-// LobbyPlayers is a helper method to define mock.On call
-//   - ctx context.Context
-//   - LobbyID entity.ID
-func (_e *MockLobby_Expecter) LobbyPlayers(ctx any, LobbyID any) *MockLobby_LobbyPlayers_Call {
-	return &MockLobby_LobbyPlayers_Call{Call: _e.mock.On("LobbyPlayers", ctx, LobbyID)}
-}
-
-func (_c *MockLobby_LobbyPlayers_Call) Run(run func(ctx context.Context, LobbyID entity.ID)) *MockLobby_LobbyPlayers_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 entity.ID
-		if args[1] != nil {
-			arg1 = args[1].(entity.ID)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockLobby_LobbyPlayers_Call) Return(accounts []entity.Account, err error) *MockLobby_LobbyPlayers_Call {
-	_c.Call.Return(accounts, err)
-	return _c
-}
-
-func (_c *MockLobby_LobbyPlayers_Call) RunAndReturn(run func(ctx context.Context, LobbyID entity.ID) ([]entity.Account, error)) *MockLobby_LobbyPlayers_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // MGet provides a mock function for the type MockLobby
 func (_mock *MockLobby) MGet(ctx context.Context, IDs ...entity.ID) ([]entity.Lobby, error) {
 	var tmpRet mock.Arguments
@@ -956,6 +888,81 @@ func (_c *MockLobby_Save_Call) Return(err error) *MockLobby_Save_Call {
 }
 
 func (_c *MockLobby_Save_Call) RunAndReturn(run func(context1 context.Context, lobby entity.Lobby) error) *MockLobby_Save_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateUserState provides a mock function for the type MockLobby
+func (_mock *MockLobby) UpdateUserState(ctx context.Context, lobbyID string, userID int64, key string, val any) error {
+	ret := _mock.Called(ctx, lobbyID, userID, key, val)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateUserState")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, int64, string, any) error); ok {
+		r0 = returnFunc(ctx, lobbyID, userID, key, val)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockLobby_UpdateUserState_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateUserState'
+type MockLobby_UpdateUserState_Call struct {
+	*mock.Call
+}
+
+// UpdateUserState is a helper method to define mock.On call
+//   - ctx context.Context
+//   - lobbyID string
+//   - userID int64
+//   - key string
+//   - val any
+func (_e *MockLobby_Expecter) UpdateUserState(ctx any, lobbyID any, userID any, key any, val any) *MockLobby_UpdateUserState_Call {
+	return &MockLobby_UpdateUserState_Call{Call: _e.mock.On("UpdateUserState", ctx, lobbyID, userID, key, val)}
+}
+
+func (_c *MockLobby_UpdateUserState_Call) Run(run func(ctx context.Context, lobbyID string, userID int64, key string, val any)) *MockLobby_UpdateUserState_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 int64
+		if args[2] != nil {
+			arg2 = args[2].(int64)
+		}
+		var arg3 string
+		if args[3] != nil {
+			arg3 = args[3].(string)
+		}
+		var arg4 any
+		if args[4] != nil {
+			arg4 = args[4].(any)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+			arg3,
+			arg4,
+		)
+	})
+	return _c
+}
+
+func (_c *MockLobby_UpdateUserState_Call) Return(err error) *MockLobby_UpdateUserState_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockLobby_UpdateUserState_Call) RunAndReturn(run func(ctx context.Context, lobbyID string, userID int64, key string, val any) error) *MockLobby_UpdateUserState_Call {
 	_c.Call.Return(run)
 	return _c
 }

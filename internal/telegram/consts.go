@@ -20,10 +20,10 @@ var (
 var (
 	selector           = &telebot.ReplyMarkup{}
 	btnEditDisplayName = selector.Data("✏️ Edit Name", "btnEditName")
-	btnJoinMatchMaking = selector.Data("🎮 Join new game", "btnJoinMatchMaking")
+	btnJoinMatchMaking = selector.Data("🎮 Join new lobby", "btnJoinMatchMaking")
 	btnCurrentMatch    = selector.Data("🕹 Current Match", "btnCurrentMatch")
 	btnResignMatch     = selector.Data("🏳️ Resign Match", "btnResignMatch")
-	btnStartGameWebapp = selector.Data("🎮 Starting game", "btnStartGameWebapp")
+	btnStartGameWebapp = selector.Data("🎮 Starting lobby", "btnStartGameWebapp")
 )
 
 func getAccount(c telebot.Context) entity.Account {
@@ -31,7 +31,7 @@ func getAccount(c telebot.Context) entity.Account {
 }
 
 func NewStartWebApp(lobbyID string) telebot.Btn {
-	return selector.WebApp("🎮 Opening the game", &telebot.WebApp{
+	return selector.WebApp("🎮 Opening the lobby", &telebot.WebApp{
 		URL: config.Default.WebAppAddr + "/lobby/" + lobbyID,
 	})
 }

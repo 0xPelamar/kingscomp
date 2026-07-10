@@ -15,11 +15,11 @@ import (
 
 func (t *Telegram) joinMatchMaking(c telebot.Context) error {
 	myAccount := getAccount(c)
-	if myAccount.CurrentLobby != "" { // TODO: Show the current game status
+	if myAccount.CurrentLobby != "" { // TODO: Show the current lobby status
 		return c.Reply("You already have a lobby with this account")
 	}
 	msg, err := t.Input(c, InputConfig{
-		Prompt:         "⏰ Each game takes about 5 minutes and if you leave the game you lose \nDo you start the game??",
+		Prompt:         "⏰ Each lobby takes about 5 minutes and if you leave the lobby you lose \nDo you start the lobby??",
 		PromptKeyboard: [][]string{{TxtDecline, TxtConfirm}},
 		Validator:      choiceValidator(TxtDecline, TxtConfirm),
 	})
@@ -59,13 +59,14 @@ loading:
 	}
 	if err != nil {
 		if errors.Is(err, matchmaking.ErrTimeout) {
-			c.Send("🕛 We looked for game for 2 minutes but didn't find anything. try again later")
+			c.Send("🕛 We looked for lobby for 2 minutes but didn't find anything. try again later")
 			return t.myInfo(c)
 		}
 		return err
 	}
 	myAccount.CurrentLobby = lobby.ID
 	c.Set("account", myAccount)
+
 	return t.currentLobby(c)
 
 }
@@ -78,7 +79,7 @@ func (t *Telegram) currentLobby(c telebot.Context) error {
 	}
 	selector := &telebot.ReplyMarkup{}
 	selector.Inline(selector.Row(btnResignMatch, NewStartWebApp(lobby.ID)))
-	return c.Send(fmt.Sprintf("🏆 Your running game:\nLobby: %s\nPlayers: %s", lobby.ID, strings.Join(lo.Map(accounts, func(item entity.Account, _ int) string {
+	return c.Send(fmt.Sprintf("🏆 Your running lobby:\nLobby: %s\nPlayers: %s", lobby.ID, strings.Join(lo.Map(accounts, func(item entity.Account, _ int) string {
 		player := fmt.Sprintf("🎴 %s %d", item.FirstName, item.ID)
 		if myAccount.ID == item.ID {
 			player = player + " (You)"
