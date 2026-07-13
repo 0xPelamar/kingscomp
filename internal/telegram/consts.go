@@ -15,6 +15,9 @@ var (
 	DefaultInputTimeoutMessage        = "We were waiting for you but you didn't send any message. Please send message when you come back."
 	TxtConfirm                        = "✅ Confirm"
 	TxtDecline                        = "❌ Decline"
+
+	DefaultReminderToReadyAfter = time.Second * 10
+	DefaultReadyDeadline        = time.Second * 30
 )
 
 var (

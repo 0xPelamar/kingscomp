@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/0xpelamar/kingscomp/internal/entity"
 	"github.com/0xpelamar/kingscomp/pkg/jsonhelper"
@@ -83,6 +84,16 @@ func (r RedisCommonBehaviour[T]) MSet(ctx context.Context, entities ...T) error 
 	err := r.client.Do(ctx, cmd.Build()).Error()
 	if err != nil {
 		logrus.WithError(err).Errorln("could not save multi items")
+		return err
+	}
+	return nil
+}
+
+func (r RedisCommonBehaviour[T]) SetField(ctx context.Context, ID entity.ID, fieldName string, value any) error {
+	cmd := r.client.B().JsonSet().Key(ID.String()).Path(fmt.Sprintf("$.%s", fieldName)).
+		Value(string(jsonhelper.Encode(value))).Build()
+	if err := r.client.Do(ctx, cmd).Error(); err != nil {
+		logrus.WithError(err).WithField("entity", ID).Errorln("failed to udpate entity")
 		return err
 	}
 	return nil

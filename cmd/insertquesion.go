@@ -27,7 +27,7 @@ func insertQuestion(cmd *cobra.Command, args []string) {
 	if err != nil || filePath == "" {
 		logrus.WithError(err).Fatalln("could not parse file path. use --file-path")
 	}
-	fmt.Println(filePath)
+	fmt.Println("the file path is :", filePath)
 	b, err := os.ReadFile(filePath)
 	if err != nil {
 		logrus.WithError(err).Fatalln("could not read the question file.")

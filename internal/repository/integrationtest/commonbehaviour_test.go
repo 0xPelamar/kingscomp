@@ -133,3 +133,19 @@ func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_Mset() {
 	assert.Equal(cbts.T(), "2", entities[0].ID)
 	assert.Equal(cbts.T(), "name2", entities[0].Name)
 }
+
+func (cbts *CommonBehaviourTestSuite) TestRedisCommonBehaviour_SetField() {
+	err := cbts.rcb.MSet(cbts.ctx,
+		TestType{ID: "2", Name: "name2"},
+		TestType{ID: "3", Name: "name3"},
+		TestType{ID: "4", Name: "name4"},
+		TestType{ID: "5", Name: "name5"},
+	)
+	assert.NoError(cbts.T(), err)
+
+	err = cbts.rcb.SetField(cbts.ctx, entity.NewID("testType", "2"), "Name", "updatedName")
+	assert.NoError(cbts.T(), err)
+	acc2, err := cbts.rcb.Get(cbts.ctx, entity.NewID("testType", "2"))
+	assert.NoError(cbts.T(), err)
+	assert.Equal(cbts.T(), "updatedName", acc2.Name)
+}

@@ -14,6 +14,7 @@ type CommonBehaviour[T entity.Entity] interface {
 	Save(context.Context, T) error
 	MGet(ctx context.Context, IDs ...entity.ID) ([]T, error)
 	MSet(ctx context.Context, entities ...T) error
+	SetField(ctx context.Context, ID entity.ID, fieldName string, value any) error
 }
 
 type Account interface {

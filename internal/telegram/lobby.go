@@ -10,6 +10,7 @@ import (
 	"github.com/0xpelamar/kingscomp/internal/entity"
 	"github.com/0xpelamar/kingscomp/internal/matchmaking"
 	"github.com/samber/lo"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/telebot.v4"
 )
 
@@ -31,8 +32,9 @@ func (t *Telegram) joinMatchMaking(c telebot.Context) error {
 	}
 	ch := make(chan struct{}, 1)
 	var lobby entity.Lobby
+	var isHost bool
 	go func() {
-		lobby, _, err = t.matchMaking.Join(context.Background(), c.Sender().ID, 10*time.Second)
+		lobby, isHost, err = t.matchMaking.Join(context.Background(), c.Sender().ID, 10*time.Second)
 		ch <- struct{}{}
 	}()
 
@@ -64,13 +66,53 @@ loading:
 		}
 		return err
 	}
+
+	// Setup reminder
+	if isHost {
+		go func() {
+			<-time.After(DefaultReminderToReadyAfter)
+			lobby, err := t.App.Lobby.Get(context.Background(), lobby.EntityID())
+			if err != nil {
+				logrus.WithError(err).Errorln("could not get lobby to send reminder")
+			}
+
+			for _, participant := range lobby.Participants {
+				if !lobby.UserState[participant].IsReady {
+					c.Bot().Send(&telebot.User{ID: participant},
+						"⚠️ A new game was created for but you still have not joined. please join the game",
+						NewLobbyInlineKeyboard(lobby.ID),
+					)
+				}
+			}
+			<-time.After(DefaultReadyDeadline - DefaultReminderToReadyAfter)
+			for _, participant := range lobby.Participants {
+				if !lobby.UserState[participant].IsReady {
+					t.App.Lobby.UpdateUserState(context.Background(), lobby.ID, participant, "is_resigned", true)
+					if err := t.App.Account.SetField(context.Background(),
+						entity.NewID("account", participant),
+						"current_lobby", ""); err != nil {
+						logrus.WithError(err).Errorln("could not resign the user and change current lobby")
+					}
+					c.Bot().Send(&telebot.User{ID: participant},
+						"⚠️ We have changed your state to resigned because you have not joined the game",
+						NewLobbyInlineKeyboard(lobby.ID),
+					)
+				}
+			}
+		}()
+	}
+
 	myAccount.CurrentLobby = lobby.ID
 	c.Set("account", myAccount)
 
 	return t.currentLobby(c)
 
 }
-
+func NewLobbyInlineKeyboard(lobbyID string) *telebot.ReplyMarkup {
+	selector := &telebot.ReplyMarkup{}
+	selector.Inline(selector.Row(btnResignMatch, NewStartWebApp(lobbyID)))
+	return selector
+}
 func (t *Telegram) currentLobby(c telebot.Context) error {
 	myAccount := getAccount(c)
 	lobby, accounts, err := t.App.LobbyPlayers(context.Background(), myAccount.CurrentLobby)
@@ -86,4 +128,14 @@ func (t *Telegram) currentLobby(c telebot.Context) error {
 		}
 		return player
 	}), "\n")), selector)
+}
+func (t *Telegram) resignLobby(c telebot.Context) error {
+	myAccount := getAccount(c)
+	myAccount.CurrentLobby = ""
+	if err := t.App.Account.Save(context.Background(), myAccount); err != nil {
+		return err
+	}
+	c.Send("✅ You resigned successfully")
+	c.Set("account", myAccount)
+	return t.myInfo(c)
 }
